@@ -11,7 +11,6 @@ def get_next_position(current_position):
 	else:
 		next_position = 0
 
-	#print("get_next_position(" + str(current_position) + "): " + str(next_position))
 	return next_position
 
 
