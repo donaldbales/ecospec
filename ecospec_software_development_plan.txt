@@ -1,0 +1,354 @@
+EcoSpec Software Development Plan
+=================================
+
+by Don Bales
+on 2014-07-24
+
+
+OVERVIEW
+--------
+
+This document outlines the work breakdown structure for the software 
+development requirements for the EcoSpec project for Yuki Hamada 
+(yhamada@anl.gov).
+
+
+Box
+---
+https://anl.app.box.com/files/0/f/1620019902
+
+
+Estimate
+--------
+Assuming data logger programming is not in scope, except retrival of data
+13 functional units
+39 - 65 man (8 hr) days
+
+
+Process
+-------
+
+Once a day, in the morning, 25 minutes before sunrise: 
+	Raspberry Pi will power on the spectrometer (ecospec_pi.py)
+Twelve times every ten minutes (every 50 seconds):
+	Raspberry Pi will command the pan-tilt platform to position the sensors in one of nine positions (pan-tilt.py)
+	Raspberry Pi will command the white reference arm to extend (feildspec4.py)
+	Raspberry Pi will command the FieldSpec4 to optimize the spectrometer (fieldspec4.py)
+	Raspberry Pi will command the FieldSpec4 to white reference the spectrometer (fieldspec4.py)
+	Raspberry Pi will command the white reference arm to retract (fieldspec4.py)
+	Raspberry Pi will command (in parallel):
+		the FieldSpec4 to collect data, 20 sample counts (fieldspec4.py)
+		the Camera to collect data, 1 JPEG image (axis_q1604.py)
+		the Data-logger to transmit data (cs_cr10x.py) (I'm missing details here yet)
+Once a minute:
+	Permanent storage facility will pull experimental data from the Raspberry Pi (echospec_data.py)
+	Permanent storage facility will delete experimental data, over 7 days old, from the Raspberry Pi (ecospec_data.py)
+	Permanent storage facility will aggregate experimental data  (ecospec_data.py)
+
+What steps am I missing???
+
+
+WORK BREAKDOWN STRUCTURE
+------------------------
+
+ASD FieldSpec4
+	Automate the use of supplied windows-based software in order to get it to cycle through optmization, calibration and data gathering
+		
+	
+AXIS Q1604 Network Camera - RGB Webcam	
+	00:40:8C:FA:74:FB
+	10.10.10.103 (dhcp'd)
+	Automate the download of an image using api or wget
+	
+	
+Campbell Scientific, Inc. Datalogger
+	Automate the data transfer to local storage	
+
+
+Campbell Scientific, Inc. IRTS-P
+	Automate the storage of readings using the data logger???
+	
+	
+Cisco Router
+	C8:D7:19:CF:23:C1
+	10.10.10.1 internal
+	was dhcp - 146.137.33.155 external
+	now static
+		146.137.13.112/28
+		146.137.13.113 gateway
+		146.137.13.114 router
+		255.255.255.240
+	userid: root
+	
+	
+xGhostBridge5 5GHz Wireless Ethernet Bridge
+x	Maximum data rate: 150 Mbps
+x	Up to 15 KM line of site range
+x	Need to calculate load of spectrometer, camera, data logger in order to see if there is enough bandwidth or will we require local buffering?
+	
+
+Irradiance, Inc. RSR2 (Licor LI-200SZ)
+	Automate the storage of readings using the data logger or N/A???
+
+
+NovaLynx 240-8104 Albedometer
+	Automate the storage of readings using the data logger???
+
+
+PTU-D300 Pan-tilt platform	
+	Python control class already exists
+	Add calibration in the form of North orientation
+	
+
+Raspberry Pi
+	B8:27:EB:9F:60:F3
+	10.10.10.108 (dhcp'd)
+	userid: pi
+	Automate the positioning of the pan-tilt platform including hardening Python control class
+	Automate the positioning of the white reference
+	Automate FieldSpec4 software: start, [optimze, calibrate, collect], stop
+	Automate Camera
+	Automate Data Logger
+	Cellular Model? 
+		http://www.verizonwireless.com/b2c/device/usb-modem/verizon-4g-lte-uml295
+		http://www.verizonwireless.com/b2c/device/usb-modem/verizon-4g-lte-551l
+	
+
+PARTS NEEDED
+------------
+* Actuator: http://www.progressiveautomations.com/actuator-tubular-high-speed-linear-actuator-stroke-size-8-force-11-lbs-speed-905sec-p-106.aspx
+* PiFace
+* CR1000
+* NL-120
+* Data Plan with Verison
+
+
+
+
+TECHNICAL DETAILS
+-----------------
+
+ASD FieldSpec4 Programming
+	(303) 444-6522
+	http://www.asdi.com
+	http://support.asdi.com/Products/Products.aspx
+	Manipulate the Windows Gui using...
+	AutoHotKey: http://www.autohotkey.com/, see: http://stackoverflow.com/questions/9698512/driving-a-windows-gui-program-from-a-script
+	UI Automation from Microsoft: http://msdn.microsoft.com/en-us/library/ms747327.aspx, see: http://stackoverflow.com/questions/9698512/driving-a-windows-gui-program-from-a-script
+	White: http://white.codeplex.com/, see: http://stackoverflow.com/questions/9698512/driving-a-windows-gui-program-from-a-script
+	Sikuli: http://sikuli.org/, see: http://stackoverflow.com/questions/9698512/driving-a-windows-gui-program-from-a-script
+	*Automa: http://www.getautoma.com/, see:http://stackoverflow.com/questions/9698512/driving-a-windows-gui-program-from-a-script, examples: http://www.getautoma.com/blog/category/ui-automation-examples
+	RIATest: http://www.cogitek.com/riatest/features/technologies/windows.html
+	pywin32: http://sourceforge.net/projects/pywin32/, see: http://stackoverflow.com/questions/14288177/interact-with-other-programs-using-python
+	pywinauto: http://code.google.com/p/pywinauto/, see: http://stackoverflow.com/questions/14288177/interact-with-other-programs-using-python, see: SWAPY: http://code.google.com/p/swapy/ to autowrite the script, see: http://showmedo.com/videotutorials/video?name=UsingpyWinAutoToControlAWindowsApplication
+	
+ASD FieldSpec4 Requirements
+	9.7 - 12.0 VDC
+	60 W
+	802.11g 
+	default wireless IP: 10.1.1.77
+	default wired IP: 10.1.1.11
+	>= Windows
+	>= IE 6
+	RS3 Software: http://support.asdi.com/Products/Products.aspx, Contact Tech Support for password: nir.support@panalytical.com
+
+	Settings:
+		Sample Count (20) (sampling duration 340ms to 185,600ms, or .34 minute to 3.1 hours)
+		Integration Time (doublings of 17ms - 9280ms) 
+		Gain
+		Offset
+	Process:
+		Optimize
+		Set Sample Count
+		Set Integration Time
+		Set Gain
+		Set Offset
+		Gather dark readings
+		Set Sample Count
+		Set Integration Time
+		Set Gain
+		Set Offset
+		Gather white reference readings
+		Set Sample Count
+		Set Integration Time
+		Set Gain
+		Set Offset
+		Gather subject readings
+
+	
+	
+ASD FieldSpec4 Procedures
+	Configuration
+		Start RS3
+			Select Control/Save Spectrum
+			Specify Save Information
+			Click on OK
+		Stop RS3
+
+	Standard Operating Procedure	
+		Start RS3
+		Requires 15 minutes warmup (user manual pp6)
+		Requires 60 minutes warmup (user manual pp60)
+		Loop
+			Click on Opt to optimize the instrument
+			Click on WR to take a white reference
+			Click on Spacebar to save spectrum
+		End Loop
+		Stop RS3
+		
+AXIS Q1604-E Web Camera
+	PD 13 W
+	50 - 100GB storage/day
+	Installation Guide: http://www.axis.com/files/manuals/ig_q16xx_e_44283_en_1204.pdf
+	IP Assignment: http://www.axis.com/files/manuals/ig_assign_ip_51375_en_1304.pdf
+	Support Guide: http://www.axis.com/techsup/cam_servers/cam_q1604e/
+	Tech Guide: http://www.axis.com/files/brochure/bc_techguide_47847_en_1305_lo.pdf
+	User Manual: http://www.axis.com/files/manuals/um_q1604e_55402_en_1312.pdf
+	ONVIF API: http://www.onvif.org/
+	*VAPIX: http://www.axis.com/techsup/cam_servers/dev/index.htm
+	Static JPEG: http://<ip>/axis-cgi/jpg/image.cgi (1280 x 960 pixels, 24 bit, 96 dpi), see" AXIS_um_q1604e_55402_en_1312.pdf, pp17
+	Acquire an image: wget "http://10.10.10.103/axis-cgi/jpg/image.cgi" -O image.jpg
+	Example from Raj: wget --user=root --password='forest' "http://hs.mcs.anl.gov:7003/axis-cgi/jpg/image.cgi?resolution=720x480&compression=10&color=1&clock=1&date=1&text=0" -O image.jpg
+	
+Campbell Scientific, Inc. Datalogger
+	Model#?
+	Users Manual CR1000: http://s.campbellsci.com/documents/us/manuals/cr1000.pdf
+	Python package for CR1000: https://pypi.python.org/pypi/PyCampbellCR1000/0.3
+	CR10X: PC208 Datalogger Software Support, see section OV3.2
+		
+
+
+Campbell Scientific, Inc. IRTS-P
+	Assume it will be attached to the datalogger?
+
+
+Irradiance, Inc. RSR2 (Licor LI-200SZ)
+	N/A?
+
+
+NovaLynx 240-8104 Albedometer
+	nova@novalynx.com
+	Assume it will be attached to the datalogger?
+	
+	
+TCP/IP PORTS REQUIRED FOR COMMUNICATIONS
+
+Port  Description
+----  --------------------------------
+   7  ping
+  22  ssh, scp, sftp
+  80  http for AXIS Q1604-E Web Camera
+ 123  ntp
+8080  tcp for FieldSpec4
+
+
+NAT ROUTER CONFIGURATION
+
+Hi Bobby,
+
+I need:
+         Jack J168-3 in Building 203, room 168 hooked up to the 16 address network for EcoSpec
+         Jack 31C in building 240, room 7143 hooked up to the same network
+         Ports: 80, 443, 10007, 10022, 10080, 11080, and 12080 opened up for access to the same network
+
+Can you tell me what the IP address range is for the network?
+
+Please let me know when I can access the network from my office, 240/7143 and again when I can access 203/168.
+
+
+Jack 31c is lit in your office for the network. 
+
+Please let me know what the mac address is of the router so I can put it into ihw.
+C8:D7:19:CF:23:C2
+
+Network is 146.137.13.112/28
+Netmask 255.255.255.240
+Gateway 146.137.13.113
+
+For the router please use 146.137.13.114
+
+I will work on the firewall rules and 203.
+
+
+
+NAT PORT FORWARDING TABLE
+
+Description  Protocol  Source Net  Port From  IP Address    Port To  
+-----------  --------  ----------  ---------  ------------  -------
+AXIS http    Both                      11080  10.10.10.103       80
+FS4 http     Both                      12080  10.10.10.102     8080
+RPi ping     Both                      10007  10.10.10.108        7
+RPi ssh      Both                      10022  10.10.10.108       22
+RPi http     Both                      10007  10.10.10.108       80
+
+
+TCP/IP COMPONENTS
+
+Description       MAC Address        IP Address       Ports
+----------------  -----------------  ---------------  ----------------
+Camera            00:40:8C:FA:74:FB  10.10.10.103     7, 22, 80, 123
+Cisco Router WAN  C8:D7:19:CF:23:C2  146.137.13.114   7, 22, 80, 123, 443,
+                                                      10007, 10022, 10080, 
+                                                      11007, 11022, 11080, 
+                                                      12007, 12022, 12080
+Cisco Router LAN  C8:D7:19:CF:23:C1                                                      
+CS Datalogger     TBD                                 7, 22, 123, 80
+FS4 Spectrometer  00:03:F4:06:BA:E3  10.10.10.102     7, 22, 123, 8080
+RPi primary       B8:27:EB:9F:60:F3  10.10.10.108     7, 22, 80, 123
+RPi backup        B8:27:EB:EE:4C:47  10.10.10.108     7, 22, 80, 123
+
+
+TCP/IP COMPONENTS WITH SPECIAL DEDICATED NETWORK ADDRESSES
+
+Description       MAC Address        IP Address       Ports
+----------------  -----------------  ---------------  ----------------
+Network                              146.137.13.112
+                                     255.255.255.240
+Gateway                              146.137.13.113
+Cisco Router WAN  C8:D7:19:CF:23:C2  146.137.13.114   7, 22, 80, 123, 443,
+                                                      10007, 10022, 10080, 
+                                                      11007, 11022, 11080, 
+                                                      12007, 12022, 12080
+Cisco Router LAN  C8:D7:19:CF:23:C1                                                      
+Camera            00:40:8C:FA:74:FB  146.137.13.119   7, 22, 80, 123
+CS Datalogger     TBD                146.137.13.118   7, 22, 123, 80
+FS4 Spectrometer  00:03:F4:06:BA:E3  146.137.13.117   7, 22, 123, 8080
+RPi primary       B8:27:EB:9F:60:F3  146.137.13.115   7, 22, 80, 123
+RPi backup        B8:27:EB:EE:4C:47  146.137.13.116   7, 22, 80, 123
+
+
+SOFTWARE LICENSE CHARACTERISTICS
+
+c Commercial Use
+  Disclose Source
+c Distribute
+  Give Credit
+n Hold Liable
+m Include Copyright
+m Include License
+  Include Notice
+  Include Original
+c Modify
+c Place Warranty
+  Private Use
+  Relicense
+  Rename
+  State Changes
+  Statically Link
+  Sublicense
+n Use Patent Claims
+  Use Trademark
+
+
+ASSIGNING AN IP ADDRESS USING ARP:
+
+Linux/Unix syntax
+arp -s <IP address> <serial number> temp ping -l 408 <IP address>
+
+Linux/Unix example
+arp -s 192.168.0.125 00:40:8c:18:10:00 temp ping -l 408 192.168.0.125
+
+
+GENERAL WGET EXAMPLE
+
+wget -b -d -nc -o wget.log -O membership-groups.json -v https://webapps.inside.anl.gov/services/membership/groups.json
