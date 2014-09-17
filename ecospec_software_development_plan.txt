@@ -309,7 +309,7 @@ Cisco Router WAN  C8:D7:19:CF:23:C2  146.137.13.114   7, 22, 80, 123, 443,
                                                       10007, 10022, 10080, 
                                                       11007, 11022, 11080, 
                                                       12007, 12022, 12080
-Cisco Router LAN  C8:D7:19:CF:23:C1                                                      
+Cisco Router LAN  C8:D7:19:CF:23:C1  146.137.13.112                                      
 Camera            00:40:8C:FA:74:FB  146.137.13.119   7, 22, 80, 123
 CS Datalogger     TBD                146.137.13.118   7, 22, 123, 80
 FS4 Spectrometer  00:03:F4:06:BA:E3  146.137.13.117   7, 22, 123, 8080
@@ -352,3 +352,30 @@ arp -s 192.168.0.125 00:40:8c:18:10:00 temp ping -l 408 192.168.0.125
 GENERAL WGET EXAMPLE
 
 wget -b -d -nc -o wget.log -O membership-groups.json -v https://webapps.inside.anl.gov/services/membership/groups.json
+
+
+TROUBLE SHOOTING
+
+How to find host addresses
+nmap -n -sP -T4 146.137.13.0-255
+
+Starting Nmap 5.21 ( http://nmap.org ) at 2014-09-17 13:46 CDT
+Nmap scan report for 146.137.13.112
+Host is up (0.00040s latency).
+MAC Address: C8:D7:19:CF:23:C1 (Unknown)
+Nmap scan report for 146.137.13.114
+Host is up (0.00042s latency).
+MAC Address: C8:D7:19:CF:23:C1 (Unknown)
+Nmap scan report for 146.137.13.115
+Host is up (0.00043s latency).
+MAC Address: 00:03:F4:06:8A:E3 (NetBurner)
+Nmap scan report for 146.137.13.119
+Host is up (0.00059s latency).
+MAC Address: 00:40:8C:FA:74:FB (Axis Communications AB)
+Nmap scan report for 146.137.13.121
+Host is up (0.0028s latency).
+MAC Address: 00:D0:2C:05:03:24 (Campbell Scientific)
+Nmap scan report for 146.137.13.126
+Host is up.
+Nmap done: 256 IP addresses (6 hosts up) scanned in 97.12 seconds
+

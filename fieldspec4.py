@@ -515,7 +515,7 @@ class FieldSpec4:
 		if host_address:
 			self.host = host_address
 		self.connection = socket.socket()
-		self.connection.settimeout(15)
+		self.connection.settimeout(60)
 		self.connection.connect((self.host, self.port))
 		response = self.connection.recv(1024)
 		print "response length: " + str(len(response))

@@ -17,8 +17,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+try:
+	import pifacedigitalio
+except:
+	print("Can't import pifacedigitalio.")
+
 import axis_q1604
-import cr_1000
+import cr1000
 import fieldspec4
 import ptu_d300
 import os
@@ -29,9 +34,12 @@ class EcoSpec:
 	DATA_PATH         = "/home/ecospec/data/"
 	LOG_PATH          = "/home/ecospec/log/"
 	AXIS_Q1604_HOST   = "146.137.13.119"
-	DATA_LOGGER_HOST  = "146.137.13.118"
-	SPECTROMETER_HOST = "146.137.13.115"
+#	CR1000_HOST       = "146.137.13.118"
+	CR1000_HOST       = "146.137.13.121"
+	FIELDSPEC4_HOST   = "146.137.13.115"
 	PAN_TILT_HOST     = "/dev/ttyUSB0"
+	POWER_RELAY       = 0
+	ACTUATOR_RELAY    = 1
 	ONE_MINUTE        = 60
 	THIRTY_MINUTES    = 30 * 60
 
@@ -41,9 +49,11 @@ class EcoSpec:
 			os.makedirs(EcoSpec.DATA_PATH)
 		if not os.path.exists(EcoSpec.LOG_PATH):
 			os.makedirs(EcoSpec.LOG_PATH)
-		self.camera_thread_status     = None
-		self.datalogger_thread_status = None
+		#self.camera_thread_status     = False
+		#self.datalogger_thread_status = False
+		self.data_set_time            = None
 		self.data_set_id              = None
+		self.since_time               = None
 		self.sunrise                  = None
 		self.sunset                   = None
 		self.dark_current_results     = []
@@ -52,12 +62,22 @@ class EcoSpec:
 		self.pantilt                  = None
 		self.pantilt_position         = -1
 		self.pantilt_positions        = [-170, -139, -108, -77, -46, -15, 15, 46, 77, 108, 139, 170]
+		self.piface                   = None
 		self.spectrometer             = None
+
+
+	def get_piface(self):
+		try:
+			self.piface = pifacedigitalio.PiFaceDigital()
+		except:
+			print("Can't access pifacedigitalio.")
+			self.piface = None
 
 
 	def main(self):
 		print "EcoSpec.main()..."
 		self.sunrise_time = self.calculate_sunrise()
+		self.since_time   = time.strftime("%Y-%m-%dT05:00:00.00")
 		self.sunset_time  = self.calculate_sunset()
 
 		# Wait until 25 minutes before sunrise, then turn on the 
@@ -65,6 +85,7 @@ class EcoSpec:
 		while time.time() < self.sunrise_time - EcoSpec.THIRTY_MINUTES:
 			time.sleep(ONE_MINUTE)
 
+		self.get_piface()
 		self.power_up()
 
 		# Wait until sunrise, then start collecting data
@@ -76,10 +97,10 @@ class EcoSpec:
 		while time.time() < self.sunset_time:
 			self.activate_pantilt()
 			self.activate_spectrometer()
+			#if count > 99:
+			#	break
 			count += 1
-			if count > 2:
-				break
-
+		
 		self.power_down()
 
 		exit(0)
@@ -94,6 +115,10 @@ class EcoSpec:
 		return next_position
 
 
+	def current_pantilt_position_string(self):
+		return '{:+04d}'.format(self.pantilt_positions[self.pantilt_position])
+
+
 	def activate_pantilt(self):
 		# A serial communications device
 		print "EcoSpec.activate_pantilt()..."
@@ -101,7 +126,7 @@ class EcoSpec:
 		if not self.pantilt:
 			self.pantilt = ptu_d300.PtuD300('/dev/ttyUSB0', 38400)
 
-		self.pantilt_position = get_next_position(self.pantilt_position)
+		self.pantilt_position = self.get_next_position(self.pantilt_position)
 
 		if self.pantilt_position == 0:
 			self.pantilt.send(ptu_d300.PtuD300.STATUS_QUERY)
@@ -111,7 +136,7 @@ class EcoSpec:
 
 		self.pantilt.send(ptu_d300.PtuD300.PAN_IMMEDIATELY)
 
-		self.pantilt.send(ptu_d300.PtuD300.PAN_POSITION_ABSOLUTE + str(self.pantilt.degrees_to_positions(positions[self.pantilt_position])))
+		self.pantilt.send(ptu_d300.PtuD300.PAN_POSITION_ABSOLUTE + str(self.pantilt.degrees_to_positions(self.pantilt_positions[self.pantilt_position])))
 
 		result = self.pantilt.send(ptu_d300.PtuD300.PAN_AWAIT_COMPLETION)
 		#print("result: '" + result +"'")
@@ -120,7 +145,7 @@ class EcoSpec:
 		if "!P" in result:
 			print("trying again...")
 			self.pantilt.send(ptu_d300.PtuD300.PAN_POSITION_ABSOLUTE)
-			self.pantilt.send(ptu_d300.PtuD300.PAN_POSITION_ABSOLUTE + str(self.pantilt.degrees_to_positions(positions[self.pantilt_position])))
+			self.pantilt.send(ptu_d300.PtuD300.PAN_POSITION_ABSOLUTE + str(self.pantilt.degrees_to_positions(self.pantilt_positions[self.pantilt_position])))
 			self.pantilt.send(ptu_d300.PtuD300.PAN_AWAIT_COMPLETION)
 
 		return True
@@ -130,13 +155,16 @@ class EcoSpec:
 		# TCP/IP communications device
 		print "EcoSpec.activate_spectrometer()..."
 
+		self.white_reference_results = []
+		self.dark_current_results    = []
+		self.subject_matter_results  = []
 		try:
 			if not self.spectrometer:
 				self.spectrometer = fieldspec4.FieldSpec4()
 
 			print self.spectrometer
 
-			self.spectrometer.open(EcoSpec.SPECTROMETER_HOST)
+			self.spectrometer.open(EcoSpec.FIELDSPEC4_HOST)
 
 			version = self.spectrometer.version()
 
@@ -185,62 +213,75 @@ class EcoSpec:
 			# Open the shutter and collect 10 white reference readings
 			acquire = None
 			if optimize.header == 100:
-				acquire = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
-				print "acquire.spectrum_header.header: " + str(acquire.spectrum_header.header)
-				print "acquire.spectrum_header.errbyte: " + str(acquire.spectrum_header.errbyte)
-				print "acquire.spectrum_header.sample_count: " + str(acquire.spectrum_header.sample_count)
-				print "acquire.spectrum_header.trigger: " + str(acquire.spectrum_header.trigger)
-				print "acquire.spectrum_header.voltage: " + str(acquire.spectrum_header.voltage)
-				print "acquire.spectrum_buffer length: " + str(len(acquire.spectrum_buffer))
-				spectrum_data = "spectrum_data: " + str(acquire.spectrum_buffer[0]) 
-				for i in range(1, len(acquire.spectrum_buffer)):
+				acquire_white_reference_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
+				self.white_reference_results.append(acquire_white_reference_readings)
+				"""
+				print "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
+				print "acquire_white_reference_readings.spectrum_header.errbyte: " + str(acquire_white_reference_readings.spectrum_header.errbyte)
+				print "acquire_white_reference_readings.spectrum_header.sample_count: " + str(acquire_white_reference_readings.spectrum_header.sample_count)
+				print "acquire_white_reference_readings.spectrum_header.trigger: " + str(acquire_white_reference_readings.spectrum_header.trigger)
+				print "acquire_white_reference_readings.spectrum_header.voltage: " + str(acquire_white_reference_readings.spectrum_header.voltage)
+				print "acquire_white_reference_readings.spectrum_buffer length: " + str(len(acquire_white_reference_readings.spectrum_buffer))
+				spectrum_data = "spectrum_data: " + str(acquire_white_reference_readings.spectrum_buffer[0]) 
+				for i in range(1, len(acquire_white_reference_readings.spectrum_buffer)):
 					spectrum_data += ","
-					spectrum_data += str(acquire.spectrum_buffer[i])
+					spectrum_data += str(acquire_white_reference_readings.spectrum_buffer[i])
 				print spectrum_data
+				"""				
 
 			# Close the shutter and collect 25 dark current readings 
 			# TODO
 			control = None
-			if optimize.header == 100 and acquire.spectrum_header.header == 100:
+			if optimize.header == 100 and acquire_white_reference_readings.spectrum_header.header == 100:
 				control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.CLOSE_SHUTTER)
 				print "control.header: " + str(control.header)
 				if control.header == 100:
-					acquire = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "25", "0")
-					print "acquire.spectrum_header.header: " + str(acquire.spectrum_header.header)
-					print "acquire.spectrum_header.errbyte: " + str(acquire.spectrum_header.errbyte)
-					print "acquire.spectrum_header.sample_count: " + str(acquire.spectrum_header.sample_count)
-					print "acquire.spectrum_header.trigger: " + str(acquire.spectrum_header.trigger)
-					print "acquire.spectrum_header.voltage: " + str(acquire.spectrum_header.voltage)
-					print "acquire.spectrum_buffer length: " + str(len(acquire.spectrum_buffer))
-					spectrum_data = "spectrum_data: " + str(acquire.spectrum_buffer[0]) 
-					for i in range(1, len(acquire.spectrum_buffer)):
+					acquire_dark_current_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "25", "0")
+					self.dark_current_results.append(acquire_dark_current_readings)
+					"""
+					print "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
+					print "acquire_dark_current_readings.spectrum_header.errbyte: " + str(acquire_dark_current_readings.spectrum_header.errbyte)
+					print "acquire_dark_current_readings.spectrum_header.sample_count: " + str(acquire_dark_current_readings.spectrum_header.sample_count)
+					print "acquire_dark_current_readings.spectrum_header.trigger: " + str(acquire_dark_current_readings.spectrum_header.trigger)
+					print "acquire_dark_current_readings.spectrum_header.voltage: " + str(acquire_dark_current_readings.spectrum_header.voltage)
+					print "acquire_dark_current_readings.spectrum_buffer length: " + str(len(acquire_dark_current_readings.spectrum_buffer))
+					spectrum_data = "spectrum_data: " + str(acquire_dark_current_readings.spectrum_buffer[0]) 
+					for i in range(1, len(acquire_dark_current_readings.spectrum_buffer)):
 						spectrum_data += ","
-						spectrum_data += str(acquire.spectrum_buffer[i])
+						spectrum_data += str(acquire_dark_current_readings.spectrum_buffer[i])
 					print spectrum_data
+					"""
 				control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.OPEN_SHUTTER)
 				print "control.header: " + str(control.header)
 
 			self.retract_white_reference_arm()
-			self.data_set_id = time.strftime("%Y%m%d%H%M%S")
+			self.data_set_time = time.time()
+			print(self.data_set_time)
+			self.data_set_id   = time.strftime("%Y%m%d%H%M%S",         time.localtime(self.data_set_time))
 			self.activate_camera()
 			self.activate_datalogger()
+			self.since_time    = time.strftime("%Y-%m-%dT%H:%M:%S.00", time.localtime(self.data_set_time))
 
 			# Open the shutter and collect 10 subject matter readings
 
-			if optimize.header == 100 and acquire.spectrum_header.header == 100 and control.header == 100:
-				acquire = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
-				print "acquire.spectrum_header.header: " + str(acquire.spectrum_header.header)
-				print "acquire.spectrum_header.errbyte: " + str(acquire.spectrum_header.errbyte)
-				print "acquire.spectrum_header.sample_count: " + str(acquire.spectrum_header.sample_count)
-				print "acquire.spectrum_header.trigger: " + str(acquire.spectrum_header.trigger)
-				print "acquire.spectrum_header.voltage: " + str(acquire.spectrum_header.voltage)
-				print "acquire.spectrum_buffer length: " + str(len(acquire.spectrum_buffer))
-				spectrum_data = "spectrum_data: " + str(acquire.spectrum_buffer[0]) 
-				for i in range(1, len(acquire.spectrum_buffer)):
-					spectrum_data += ","
-					spectrum_data += str(acquire.spectrum_buffer[i])
-				print spectrum_data
-
+			if optimize.header == 100 and acquire_dark_current_readings.spectrum_header.header == 100 and control.header == 100:
+				for j in range(0, 19):
+					acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
+					self.subject_matter_results.append(acquire_subject_matter_readings)
+					"""
+					print "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
+					print "acquire_subject_matter_readings.spectrum_header.errbyte: " + str(acquire_subject_matter_readings.spectrum_header.errbyte)
+					print "acquire_subject_matter_readings.spectrum_header.sample_count: " + str(acquire_subject_matter_readings.spectrum_header.sample_count)
+					print "acquire_subject_matter_readings.spectrum_header.trigger: " + str(acquire_subject_matter_readings.spectrum_header.trigger)
+					print "acquire_subject_matter_readings.spectrum_header.voltage: " + str(acquire_subject_matter_readings.spectrum_header.voltage)
+					print "acquire_subject_matter_readings.spectrum_buffer length: " + str(len(acquire_subject_matter_readings.spectrum_buffer))
+					spectrum_data = "spectrum_data: " + str(acquire_subject_matter_readings.spectrum_buffer[0]) 
+					for i in range(1, len(acquire_subject_matter_readings.spectrum_buffer)):
+						spectrum_data += ","
+						spectrum_data += str(acquire_subject_matter_readings.spectrum_buffer[i])
+					print spectrum_data
+					"""
+	
 			self.save_spectrometer_readings()
 			self.spectrometer.close()
 
@@ -250,10 +291,18 @@ class EcoSpec:
 #			    time.sleep(1)
 		except:
 			print "EcoSpec.activate_spectrometer(): ERROR:"
-			print "sys.exc_type: " + str(sys.exc_type)
-			print "sys.exc_value: " + str(sys.exc_value)
-			print "sys.exc_traceback: " + str(sys.exc_traceback)
-			print "sys.exc_info(): " + str(sys.exc_info())
+			print "sys.exc_type: " 
+			print  sys.exc_type
+			print "sys.exc_value: "
+			print  sys.exc_value
+			print "sys.exc_traceback: "
+			print  sys.exc_traceback
+			print "sys.exc_info(): " 
+			print  sys.exc_info()
+			if not self.spectrometer:
+				self.spectrometer.close()
+			raise
+
 
 		return True
 
@@ -262,7 +311,7 @@ class EcoSpec:
 		# TCP/IP communications device
 		print "EcoSpec.activate_camera()..."
 
-		camera = axis_q1604.AxisQ1604(self.data_set_id, EcoSpec.AXIS_Q1604_HOST)
+		camera = axis_q1604.AxisQ1604(self.data_set_id, self.current_pantilt_position_string(), EcoSpec.DATA_PATH, EcoSpec.LOG_PATH, EcoSpec.AXIS_Q1604_HOST)
 
 		return True
 
@@ -271,7 +320,7 @@ class EcoSpec:
 		# A serial communications device
 		print "EcoSpec.activate_datalogger()..."
 
-		data_logger = cr_1000.CR1000(self.data_set_id, EcoSpec.DATA_LOGGER_HOST)
+		data_logger = cr1000.CR1000(self.data_set_id, self.current_pantilt_position_string(), EcoSpec.DATA_PATH, EcoSpec.LOG_PATH, self.since_time, EcoSpec.CR1000_HOST)
 
 		return True
 
@@ -284,6 +333,7 @@ class EcoSpec:
 		now_list[4] = 0
 		now_list[5] = 0
 		result = time.mktime(tuple(now_list))
+		print(result)
 		return result
 
 
@@ -295,54 +345,60 @@ class EcoSpec:
 		now_list[4] = 0
 		now_list[5] = 0
 		result = time.mktime(tuple(now_list))
+		print(result)
 		return result
 
 
 	def extend_white_reference_arm(self):
 		print "EcoSpec.extend_white_reference_arm()..."
-		# TODO:
+		if self.piface:
+			self.piface.relays[EcoSpec.ACTUATOR_RELAY].turn_on()
 		return True
 
 
 	def power_down(self):
 		print "EcoSpec.power_down()..."
-		# TODO:
+		if self.piface:
+			self.piface.relays[EcoSpec.POWER_RELAY].turn_off()
 		return True
 
 
 	def power_up(self):
 		print "EcoSpec.power_up()..."
-		# TODO: 
+		if self.piface:
+			self.piface.relays[EcoSpec.POWER_RELAY].turn_on()
 		return True
 
 
 	def retract_white_reference_arm(self):
 		print "EcoSpec.retract_white_reference_arm()..."
-		# TODO: 
+		if self.piface:
+			self.piface.relays[EcoSpec.ACTUATOR_RELAY].turn_off()
 		return True
 
 
 	def save_spectrometer_readings(self):
 		print "EcoSpec.save_spectrometer_readings()..."
-		file_name = EcoSpec.DATA_PATH + self.data_set_id + "_spectrometer" + "_wr.tsv"
-		file_handle = open(file_name, "a")
+		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-white_reference.tsv"
+		file_handle = open(file_name, "w")
 		for i in range(0, len(self.white_reference_results)):
-			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.white_reference_results[i])
+			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.white_reference_results[i].to_tsv())
 		file_handle.close()
 
-		file_name = EcoSpec.DATA_PATH + self.data_set_id + "_spectrometer" + "_dc.tsv"
-		file_handle = open(file_name, "a")
+		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-dark_current.tsv"
+		file_handle = open(file_name, "w")
 		for i in range(0, len(self.dark_current_results)):
-			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.dark_current_results[i])
+			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.dark_current_results[i].to_tsv())
 		file_handle.close()
 
-		file_name = EcoSpec.DATA_PATH + self.data_set_id + "_spectrometer" + "_sm.tsv"
-		file_handle = open(file_name, "a")
+		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-subject_matter.tsv"
+		file_handle = open(file_name, "w")
 		for i in range(0, len(self.subject_matter_results)):
-			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.subject_matter_results[i])
+			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.subject_matter_results[i].to_tsv())
 		file_handle.close()
 		return True
 
 
 if __name__ == '__main__':
-    main()
+	program = EcoSpec()
+	program.main()
