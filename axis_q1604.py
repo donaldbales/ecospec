@@ -21,15 +21,19 @@ import ecospec
 import subprocess
 
 class AxisQ1604:
-	def __init__(self, data_set_id, host="146.137.13.119", port="80"):
+	def __init__(self, data_set_id, current_pantilt_position_string, data_path, log_path, host="146.137.13.119", port="80"):
 		print ("AxisQ1604.__init__()...")
 		self.data_set_id = data_set_id
 		self.host        = host
 		self.port        = port
 		time_string      = "axis_q1604" #time.strftime("%Y%m%d%H%M%S")
-		data_path        = ecospec.EcoSpec.DATA_PATH + self.data_set_id + "_" + time_string + ".jpg"
-		log_path         = ecospec.EcoSpec.LOG_PATH  + self.data_set_id + "_" + time_string + ".jpg.log"
-		subprocess.check_call("wget -b -d -nc -o " + log_path + " -O " + data_path -v + " http://" + self.host + ":" + self.port + "/axis-cgi/jpg/image.cgi")
-		
+		data_file_path   = data_path + self.data_set_id + "-" + current_pantilt_position_string + "-" + time_string + ".jpg"
+		print("data_file_path: " + data_file_path)
+		log_file_path    = log_path  + self.data_set_id + "-" + current_pantilt_position_string + "-" + time_string + ".log"
+		print("log_file_path: " + log_file_path)
+		wget_command     = "umask 000 && wget -b -d -nc -o " + log_file_path + " -O " + data_file_path + " -v 'http://" + self.host + ":" + self.port + "/axis-cgi/jpg/image.cgi' && exit 0"
+#		wget_command     = "umask 000 && wget    -d -nc -o " + log_file_path + " -O " + data_file_path + " -v 'http://" + self.host + ":" + self.port + "/axis-cgi/jpg/image.cgi' && exit $?"
+		print("wget_command: " + wget_command)
+		subprocess.call(wget_command, shell=True)
 		
 		

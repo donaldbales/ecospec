@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# cr_1000.py - Ecospec CR1000 Program
+# cr1000.py - Ecospec CR1000 Program
 # Copyright (C) 2014  Donald J. Bales, Argonne National Laboratory
 #
 # This program is free software; you can redistribute it and/or
@@ -21,16 +21,21 @@ import ecospec
 import subprocess
 
 class CR1000:
-	def __init__(self, data_set_id, host="146.137.13.118", port="80"):
+	def __init__(self, data_set_id, current_pantilt_position_string, data_path, log_path, since_time, host="146.137.13.118", port="80"):
 		print ("CR1000.__init__()...")
 		self.data_set_id = data_set_id
 		self.host        = host
 		self.port        = port
 		self.tables      = ("_9_Sec", "_01_Min", "_01_Hour", "_01_Day", "Status")
-		for table in tables:
-			time_string  = "cr_1000" #time.strftime("%Y%m%d%H%M%S")
-			data_path    = ecospec.EcoSpec.DATA_PATH + self.data_set_id + "_" + time_string + table + ".json"
-			log_path     = ecospec.EcoSpec.LOG_PATH  + self.data_set_id + "_" + time_string + table + ".log"
-			subprocess.check_call("wget -b -d -nc -o " + log_path + " -O " + data_path -v + " http://" + self.host + ":" + self.port + "/?command=" + command + "&uri=" + table + "&format=json" + "&mode=since_time")
+		for table in self.tables:
+			time_string  = "cr1000" #time.strftime("%Y%m%d%H%M%S")
+			data_file_path   = ecospec.EcoSpec.DATA_PATH + self.data_set_id + "-" + current_pantilt_position_string + "-" + time_string + "-" + table + ".json"
+			print("data_file_path: " + data_file_path)
+			log_file_path    = ecospec.EcoSpec.LOG_PATH  + self.data_set_id + "-" + current_pantilt_position_string + "-" + time_string + "-" + table + ".log"
+			print("log_file_path: " + log_file_path)
+			wget_command     = "umask 000 && wget -b -d -nc -o " + log_file_path + " -O " + data_file_path + " -v 'http://" + self.host + ":" + self.port + "/?command=dataquery" + "&uri=" + table + "&format=json" + "&mode=since-time" + "&p1=" + since_time + "' && exit $?\n"
+#			wget_command     = "umask 000 && wget -   d -nc -o " + log_file_path + " -O " + data_file_path + " -v 'http://" + self.host + ":" + self.port + "/?command=dataquery" + "&uri=" + table + "&format=json" + "&mode=since-time" + "&p1=" + since_time + "' && exit $?\n"
+			print("wget_command: " + wget_command)
+			subprocess.call(wget_command, shell=True)
 			
 
