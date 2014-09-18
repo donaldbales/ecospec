@@ -5,5 +5,6 @@ wget https://raw.githubusercontent.com/donaldbales/ecospec/master/axis_q1604.py
 wget https://raw.githubusercontent.com/donaldbales/ecospec/master/fieldspec4.py
 wget https://raw.githubusercontent.com/donaldbales/ecospec/master/cr1000.py
 wget https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu_d300.py
-
+wget https://raw.githubusercontent.com/donaldbales/ecospec/master/update
+chmod 775 update
 echo all updated!
