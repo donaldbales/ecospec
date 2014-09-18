@@ -1,0 +1,9 @@
+#!/bin/bash
+
+wget https://raw.githubusercontent.com/donaldbales/ecospec/master/ecospec.py
+wget https://raw.githubusercontent.com/donaldbales/ecospec/master/axis_q1604.py
+wget https://raw.githubusercontent.com/donaldbales/ecospec/master/fieldspec4.py
+wget https://raw.githubusercontent.com/donaldbales/ecospec/master/cr1000.py
+wget https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu_d300.py
+
+echo all updated!

@@ -1,0 +1,19 @@
+http://elinux.org/RPi_Setting_up_a_static_IP_in_Debian
+
+
+
+
+
+
+
+
+If you are using Debian on Raspberry Pi, then you need to edit /etc/resolv.conf
+
+nano /etc/resolv.conf
+
+then add the server IP of the openDNS
+
+nameserver  208.67.222.222
+nameserver 208.67.220.220
+
+Btw, if you have any concern about speed of the DNS you may want to take a look at this post

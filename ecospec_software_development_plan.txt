@@ -304,17 +304,17 @@ Description       MAC Address        IP Address       Ports
 ----------------  -----------------  ---------------  ----------------
 Network                              146.137.13.112
                                      255.255.255.240
+Cisco Router LAN  C8:D7:19:CF:23:C1  146.137.13.112                                      
 Gateway                              146.137.13.113
 Cisco Router WAN  C8:D7:19:CF:23:C2  146.137.13.114   7, 22, 80, 123, 443,
                                                       10007, 10022, 10080, 
                                                       11007, 11022, 11080, 
                                                       12007, 12022, 12080
-Cisco Router LAN  C8:D7:19:CF:23:C1  146.137.13.112                                      
-Camera            00:40:8C:FA:74:FB  146.137.13.119   7, 22, 80, 123
-CS Datalogger     TBD                146.137.13.118   7, 22, 123, 80
-FS4 Spectrometer  00:03:F4:06:BA:E3  146.137.13.117   7, 22, 123, 8080
 RPi primary       B8:27:EB:9F:60:F3  146.137.13.115   7, 22, 80, 123
 RPi backup        B8:27:EB:EE:4C:47  146.137.13.116   7, 22, 80, 123
+FS4 Spectrometer  00:03:F4:06:BA:E3  146.137.13.117   7, 22, 123, 8080
+CS Datalogger     00:D0:2C:05:03:24  146.137.13.118   7, 22, 123, 80
+Camera            00:40:8C:FA:74:FB  146.137.13.119   7, 22, 80, 123
 
 
 SOFTWARE LICENSE CHARACTERISTICS
@@ -378,4 +378,7 @@ MAC Address: 00:D0:2C:05:03:24 (Campbell Scientific)
 Nmap scan report for 146.137.13.126
 Host is up.
 Nmap done: 256 IP addresses (6 hosts up) scanned in 97.12 seconds
+
+Host to find host ports
+nmap -A -T4 <host>
 

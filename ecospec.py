@@ -34,8 +34,8 @@ class EcoSpec:
 	DATA_PATH         = "/home/ecospec/data/"
 	LOG_PATH          = "/home/ecospec/log/"
 	AXIS_Q1604_HOST   = "146.137.13.119"
-#	CR1000_HOST       = "146.137.13.118"
-	CR1000_HOST       = "146.137.13.121"
+	CR1000_HOST       = "146.137.13.118"
+#	CR1000_HOST       = "146.137.13.121"
 	FIELDSPEC4_HOST   = "146.137.13.115"
 	PAN_TILT_HOST     = "/dev/ttyUSB0"
 	POWER_RELAY       = 0

@@ -1,0 +1,58 @@
+Quick Notes: Verizon 4G LTE uses the GSM APN authentication method through a GGSN (similar to AT&T) and 3G (1X/EVDO) traditional uses the HA CDMA method. The old CDMA authentication method has been posted years before so I won't repost that.
+ 
+4G LTE GSM General Device Settings-
+Phone Number: PhoneNumber
+Account name: PhoneNumber@vzw4g.com
+Password: vzw
+ 
+Advanced Settings-
+Carrier: Generic
+Model: GPRS (GSM/3G)
+APN: vzwinternet
+CID: 1
+
+
+
+using wvdial
+
+http://www.pagey.info/2011/04/using-pantech-uml290-on-ubuntu-linux.html
+
+using pppd
+
+http://www.pagey.info/2011/07/pantech-uml290-pppd-script.html
+
+
+From Rajesh:
+
+Hi Don, I am guessing you are hoping to use wvdial, have it as a crontab event @reboot. 
+Here is a wvdial config for UML290 with Verizon data plan...
+
+[ Dialer Defaults ]
+Init1 = ATZ
+Stupid Mode = 1
+Dial Command = atdt
+New PPPD = yes
+Carrier Check = no
+Modem = /dev/ttyACM0
+Baud = 100000000
+Phone = *99***3#
+Password = 1
+Username = 1
+
+By the way, VZ seems to provide a private IP address to the 4G modems. At the least 
+that is what I am getting. Autossh with a reverse ssh hook should give you a path 
+back into the device. 
+
+From my personal experience, wvdial works better than sakis3g. 
+
+Cheers!
+Raj
+
+
+sudo wvdial
+
+sudo kill -9 `ps -A | grep pppd   | cut -d " " -f 2`
+sudo kill -9 `ps -A | grep wvdial | cut -d " " -f 2`
+
+
+
