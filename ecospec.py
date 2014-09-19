@@ -62,7 +62,7 @@ class EcoSpec:
 		self.pantilt                  = None
 		self.pantilt_position         = -1
 		self.pantilt_positions        = [-170, -139, -108, -77, -46, -15, 15, 46, 77, 108, 139, 170]
-		self.piface                   = None
+		self.piface                   = self.get_piface()
 		self.spectrometer             = None
 
 
@@ -84,8 +84,7 @@ class EcoSpec:
 		# rest of the equipment, in order to warm up the spectrometer
 		while time.time() < self.sunrise_time - EcoSpec.THIRTY_MINUTES:
 			time.sleep(ONE_MINUTE)
-
-		self.get_piface()
+		
 		self.power_up()
 
 		# Wait until sunrise, then start collecting data
@@ -230,7 +229,8 @@ class EcoSpec:
 				"""				
 
 			# Close the shutter and collect 25 dark current readings 
-			# TODO
+			# TODO get time for ensuring restraction
+			self.retract_white_reference_arm()
 			control = None
 			if optimize.header == 100 and acquire_white_reference_readings.spectrum_header.header == 100:
 				control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.CLOSE_SHUTTER)
@@ -254,18 +254,16 @@ class EcoSpec:
 				control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.OPEN_SHUTTER)
 				print "control.header: " + str(control.header)
 
-			self.retract_white_reference_arm()
+			#TODO: verify retraction
 			self.data_set_time = time.time()
 			print(self.data_set_time)
 			self.data_set_id   = time.strftime("%Y%m%d%H%M%S",         time.localtime(self.data_set_time))
 			self.activate_camera()
-			self.activate_datalogger()
-			self.since_time    = time.strftime("%Y-%m-%dT%H:%M:%S.00", time.localtime(self.data_set_time))
 
 			# Open the shutter and collect 10 subject matter readings
 
 			if optimize.header == 100 and acquire_dark_current_readings.spectrum_header.header == 100 and control.header == 100:
-				for j in range(0, 19):
+				for j in range(0, 14):
 					acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
 					self.subject_matter_results.append(acquire_subject_matter_readings)
 					"""
@@ -281,7 +279,9 @@ class EcoSpec:
 						spectrum_data += str(acquire_subject_matter_readings.spectrum_buffer[i])
 					print spectrum_data
 					"""
-	
+
+			self.activate_datalogger()
+			self.since_time    = time.strftime("%Y-%m-%dT%H:%M:%S.00", time.localtime(self.data_set_time))
 			self.save_spectrometer_readings()
 			self.spectrometer.close()
 
