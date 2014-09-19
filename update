@@ -1,10 +1,18 @@
 #!/bin/bash
 
-wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ecospec.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/axis-try1.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/axis_q1604.py
-wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fieldspec4.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/cr1000-try1.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/cr1000.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ecospec.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fieldspec4.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fs4-try1.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fs4-try2.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fs4-try3.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fs4-try4.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu-try1.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu_d300.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/update
+chmod 666 *.py
 chmod 775 update
 echo all updated!
