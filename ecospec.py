@@ -39,7 +39,7 @@ class EcoSpec:
 	PAN_TILT_HOST     = "/dev/ttyUSB0"
 	POWER_RELAY       = 0
 	ACTUATOR_RELAY    = 1
-    ACTUATOR_DELAY    = 3
+	ACTUATOR_DELAY    = 3
 	ONE_MINUTE        = 60
 	THIRTY_MINUTES    = 30 * 60
 
@@ -194,7 +194,7 @@ class EcoSpec:
 
 			self.extend_white_reference_arm()
 
-			time.sleep(ACTUATOR_DELAY)
+			time.sleep(EcoSpec.ACTUATOR_DELAY)
 
 			# Optimize the spectrometer with the white reference in field of view
 			
@@ -262,8 +262,8 @@ class EcoSpec:
 			#Verify retraction
 			self.retract_white_reference_stop_time = time.time()
 			self.acquire_dark_reading_elapsed_time = self.retract_white_reference_stop_time - self.retract_white_reference_start_time
-			if self.acquire_dark_reading_elapsed_time < ACTUATOR_DELAY:
-				time.sleep(ACTUATOR_DELAY - self.acquire_dark_reading_elapsed_time)
+			if self.acquire_dark_reading_elapsed_time < EcoSpec.ACTUATOR_DELAY:
+				time.sleep(EcoSpec.ACTUATOR_DELAY - self.acquire_dark_reading_elapsed_time)
 
 			self.data_set_time = time.time()
 			print(self.data_set_time)
