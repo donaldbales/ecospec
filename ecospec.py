@@ -62,16 +62,12 @@ class EcoSpec:
 		self.pantilt                  = None
 		self.pantilt_position         = -1
 		self.pantilt_positions        = [-170, -139, -108, -77, -46, -15, 15, 46, 77, 108, 139, 170]
-		self.piface                   = self.get_piface()
-		self.spectrometer             = None
-
-
-	def get_piface(self):
 		try:
 			self.piface = pifacedigitalio.PiFaceDigital()
 		except:
 			print("Can't access pifacedigitalio.")
-			self.piface = None
+			self.piface               = None
+		self.spectrometer             = None
 
 
 	def main(self):
