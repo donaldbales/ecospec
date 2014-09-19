@@ -222,6 +222,14 @@ Campbell Scientific, Inc. IRTS-P
 	Assume it will be attached to the datalogger?
 
 
+Celluar Modem Verizon UML295
+
+You'll need the following email settings: 
+Incoming mail server (POP3): pop.verizon.net. 
+Incoming Server Port Numbers: 995. 
+Outgoing mail server (SMTP): smtp.verizon.net.
+
+
 Irradiance, Inc. RSR2 (Licor LI-200SZ)
 	N/A?
 
