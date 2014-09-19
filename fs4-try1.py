@@ -9,9 +9,7 @@ import struct
 
 connection = socket.socket()
 
-#host = "10.10.10.103"
-host = "146.137.13.115"
-#port = 80
+host = "146.137.13.117"
 port = 8080
 
 connection.connect((host, port))

@@ -373,7 +373,7 @@ class FieldSpec4:
 	def __init__(self):
 		print ("FieldSpec4.__init__()...")
 		self.connection = None
-		self.host = "10.1.1.11"
+		self.host = "146.137.13.117"
 		self.port = 8080
 	
 
