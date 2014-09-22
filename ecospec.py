@@ -175,18 +175,18 @@ class EcoSpec:
 					restore = self.spectrometer.restore("1")
 					print "restore.header: " + str(restore.header)
 
-			"""
-				print "restore.header: " + str(restore.header)
-				print "restore.errbyte: " + str(restore.errbyte)
-				for i in range(0, 200):
-					if restore.names[i]:
-						print restore.names[i] + ": " + str(restore.values[i])
-				print "restore.count: " + str(restore.count)
-				print "restore.verify: " + str(restore.verify)
-			"""
-				else:
+				"""
+					print "restore.header: " + str(restore.header)
+					print "restore.errbyte: " + str(restore.errbyte)
+					for i in range(0, 200):
+						if restore.names[i]:
+							print restore.names[i] + ": " + str(restore.values[i])
+					print "restore.count: " + str(restore.count)
+					print "restore.verify: " + str(restore.verify)
+				"""
+			else:
 				self.spectrometer.open(EcoSpec.FIELDSPEC4_HOST)
-					
+
 
 			"""
 			a = self.spectrometer.abort()
@@ -245,7 +245,7 @@ class EcoSpec:
 			self.retract_white_reference_start_time = time.time()
 
 			control = None
-			if optimize.header                                         == 100 and 
+			if optimize.header                                         == 100 and \
 			   acquire_white_reference_readings.spectrum_header.header == 100:
 			   	print "Close the shutter..."
 				control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.CLOSE_SHUTTER)
@@ -285,9 +285,9 @@ class EcoSpec:
 
 			# Open the shutter and collect 10 subject matter readings
 
-			if optimize.header                                         == 100 and 
-			   acquire_white_reference_readings.spectrum_header.header == 100 and 
-			   acquire_dark_current_readings.spectrum_header.header    == 100 and 
+			if optimize.header                                         == 100 and \
+			   acquire_white_reference_readings.spectrum_header.header == 100 and \
+			   acquire_dark_current_readings.spectrum_header.header    == 100 and \
 			   control.header                                          == 100:
 				print "Acquire Subject Matter Readings 15x..."
 				for j in range(0, 14):
@@ -422,7 +422,7 @@ class EcoSpec:
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.dark_current_results)):
 			if i == 0:
-				file_handle.write(self.data_set_id + delimiter + "pantilt_position"                     + delimiter + self.dark_current_results[i].to_csv_heading() + "\n")
+				file_handle.write("data_set_id"                + delimiter + "pantilt_position"                     + delimiter + self.dark_current_results[i].to_csv_heading() + "\n")
 				file_handle.write('"' + self.data_set_id + '"' + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv()         + "\n")
 			else:
 				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv() + "\n")
@@ -432,7 +432,7 @@ class EcoSpec:
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.subject_matter_results)):
 			if i == 0:
-				file_handle.write(self.data_set_id + delimiter + "pantilt_position"                     + delimiter + self.subject_matter_results[i].to_csv_heading() + "\n")
+				file_handle.write("data_set_id"                + delimiter + "pantilt_position"                     + delimiter + self.subject_matter_results[i].to_csv_heading() + "\n")
 				file_handle.write('"' + self.data_set_id + '"' + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv()         + "\n")
 			else:
 				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv() + "\n")
