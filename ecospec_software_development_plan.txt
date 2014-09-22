@@ -390,3 +390,8 @@ Nmap done: 256 IP addresses (6 hosts up) scanned in 97.12 seconds
 Host to find host ports
 nmap -A -T4 <host>
 
+
+
+RAIN DETECTOR
+-------------
+http://www.vaisala.com/Vaisala%20Documents/Brochures%20and%20Datasheets/Vaisala%20DRD11A%20Rain%20Detector%20Brochure.pdf
