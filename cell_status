@@ -1,0 +1,4 @@
+#!/bin/bash
+ps -A | grep pppd
+ps -A | grep wvdial
+ping -c 3 www.google.com
