@@ -280,7 +280,7 @@ class EcoSpec:
 
 			self.data_set_time = time.time()
 			print(self.data_set_time)
-			self.data_set_id   = time.strftime("%Y%m%d%H%M%S",         time.localtime(self.data_set_time))
+			self.data_set_id   = time.strftime("%Y%m%d%H%M%S", time.localtime(self.data_set_time))
 			self.activate_camera()
 
 			# Open the shutter and collect 10 subject matter readings
@@ -408,34 +408,35 @@ class EcoSpec:
 	def save_spectrometer_readings(self):
 		print "EcoSpec.save_spectrometer_readings()..."
 		delimiter = ","
+		data_set_timestamp_string = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.data_set_time))
 		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-white_reference.csv"
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.white_reference_results)):
 			if i == 0:
-				file_handle.write("data_set_id"                + delimiter + "pantilt_position"                     + delimiter + self.white_reference_results[i].to_csv_heading() + "\n")
-				file_handle.write('"' + self.data_set_id + '"' + delimiter + self.current_pantilt_position_string() + delimiter + self.white_reference_results[i].to_csv()         + "\n")
+				file_handle.write("data_set_time"           + delimiter + "pantilt_position"                     + delimiter + self.white_reference_results[i].to_csv_heading() + "\n")
+				file_handle.write(data_set_timestamp_string + delimiter + self.current_pantilt_position_string() + delimiter + self.white_reference_results[i].to_csv()         + "\n")
 			else:
-				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.white_reference_results[i].to_csv() + "\n")
+				file_handle.write(data_set_timestamp_string + delimiter + self.current_pantilt_position_string() + delimiter + self.white_reference_results[i].to_csv() + "\n")
 		file_handle.close()
 
 		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-dark_current.csv"
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.dark_current_results)):
 			if i == 0:
-				file_handle.write("data_set_id"                + delimiter + "pantilt_position"                     + delimiter + self.dark_current_results[i].to_csv_heading() + "\n")
-				file_handle.write('"' + self.data_set_id + '"' + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv()         + "\n")
+				file_handle.write("data_set_time"           + delimiter + "pantilt_position"                     + delimiter + self.dark_current_results[i].to_csv_heading() + "\n")
+				file_handle.write(data_set_timestamp_string + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv()         + "\n")
 			else:
-				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv() + "\n")
+				file_handle.write(data_set_timestamp_string + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv() + "\n")
 		file_handle.close()
 
 		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-subject_matter.csv"
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.subject_matter_results)):
 			if i == 0:
-				file_handle.write("data_set_id"                + delimiter + "pantilt_position"                     + delimiter + self.subject_matter_results[i].to_csv_heading() + "\n")
-				file_handle.write('"' + self.data_set_id + '"' + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv()         + "\n")
+				file_handle.write("data_set_time"           + delimiter + "pantilt_position"                     + delimiter + self.subject_matter_results[i].to_csv_heading() + "\n")
+				file_handle.write(data_set_timestamp_string + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv()         + "\n")
 			else:
-				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv() + "\n")
+				file_handle.write(data_set_timestamp_string + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv() + "\n")
 		file_handle.close()
 		return True
 
