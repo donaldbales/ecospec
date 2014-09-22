@@ -257,7 +257,7 @@ class FieldSpec4Acquire:
 		result += "swir2_reserved2" + delimiter
 		result += "swir2_reserved3" + delimiter
 		for i in range(0, len(self.spectrum_buffer)):
-			result += "spectrum" + str(i) + delimiter
+			result += "spectrum" + str(i + 350) + delimiter
 		return result
 
 
