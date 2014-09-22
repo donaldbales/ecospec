@@ -35,11 +35,11 @@ class EcoSpec:
 	LOG_PATH          = "/home/ecospec/log/"
 	AXIS_Q1604_HOST   = "146.137.13.119"
 	CR1000_HOST       = "146.137.13.118"
-#	CR1000_HOST       = "146.137.13.121"
-	FIELDSPEC4_HOST   = "146.137.13.115"
+	FIELDSPEC4_HOST   = "146.137.13.117"
 	PAN_TILT_HOST     = "/dev/ttyUSB0"
 	POWER_RELAY       = 0
 	ACTUATOR_RELAY    = 1
+	ACTUATOR_DELAY    = 3
 	ONE_MINUTE        = 60
 	THIRTY_MINUTES    = 30 * 60
 
@@ -157,29 +157,31 @@ class EcoSpec:
 			if not self.spectrometer:
 				self.spectrometer = fieldspec4.FieldSpec4()
 
-			print self.spectrometer
+				print self.spectrometer
 
-			self.spectrometer.open(EcoSpec.FIELDSPEC4_HOST)
+				self.spectrometer.open(EcoSpec.FIELDSPEC4_HOST)
 
-			version = self.spectrometer.version()
+				version = self.spectrometer.version()
 
-			print "version.name: " + version.name
-			print "version.value: " + str(version.value)
-			print "version.type: " + str(version.type)
+				print "version.name: " + version.name
+				print "version.value: " + str(version.value)
+				print "version.type: " + str(version.type)
 
-			restore = self.spectrometer.restore("1")
-
-			if restore.header != 100:
 				restore = self.spectrometer.restore("1")
 
-			print "restore.header: " + str(restore.header)
-			print "restore.errbyte: " + str(restore.errbyte)
-			for i in range(0, 200):
-				if restore.names[i]:
-					print restore.names[i] + ": " + str(restore.values[i])
-			print "restore.count: " + str(restore.count)
-			print "restore.verify: " + str(restore.verify)
+				if restore.header != 100:
+					restore = self.spectrometer.restore("1")
 
+				"""
+				print "restore.header: " + str(restore.header)
+				print "restore.errbyte: " + str(restore.errbyte)
+				for i in range(0, 200):
+					if restore.names[i]:
+						print restore.names[i] + ": " + str(restore.values[i])
+				print "restore.count: " + str(restore.count)
+				print "restore.verify: " + str(restore.verify)
+				"""
+			
 			"""
 			a = self.spectrometer.abort()
 
@@ -188,15 +190,17 @@ class EcoSpec:
 			print "abort.name: " + a.name
 			print "abort.value: " + str(a.value)
 			print "abort.count: " + str(a.count)
-
 			"""
 
 			self.extend_white_reference_arm()
 
+			time.sleep(EcoSpec.ACTUATOR_DELAY)
+
 			# Optimize the spectrometer with the white reference in field of view
 			
 			optimize = self.spectrometer.optimize(fieldspec4.FieldSpec4.OPT_VNIR_SWIR1_SWIR2)
-
+			print "Optimize..."
+			"""
 			print "optimize.header: " + str(optimize.header)
 			print "optimize.errbyte: " + str(optimize.errbyte)
 			print "optimize.itime: " + str(optimize.itime)
@@ -204,10 +208,12 @@ class EcoSpec:
 			print "optimize.gain2: " + str(optimize.gain2)
 			print "optimize.offset1: " + str(optimize.offset1)
 			print "optimize.offset2: " + str(optimize.offset2)
+			"""
 
 			# Open the shutter and collect 10 white reference readings
 			acquire = None
 			if optimize.header == 100:
+				print "Acquire White Reference Readings..."
 				acquire_white_reference_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
 				self.white_reference_results.append(acquire_white_reference_readings)
 				"""
@@ -227,11 +233,14 @@ class EcoSpec:
 			# Close the shutter and collect 25 dark current readings 
 			# TODO get time for ensuring restraction
 			self.retract_white_reference_arm()
+			self.retract_white_reference_start_time = time.time()
+
 			control = None
 			if optimize.header == 100 and acquire_white_reference_readings.spectrum_header.header == 100:
 				control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.CLOSE_SHUTTER)
 				print "control.header: " + str(control.header)
 				if control.header == 100:
+					print "Acquire Dark Current Readings..."
 					acquire_dark_current_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "25", "0")
 					self.dark_current_results.append(acquire_dark_current_readings)
 					"""
@@ -250,7 +259,12 @@ class EcoSpec:
 				control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.OPEN_SHUTTER)
 				print "control.header: " + str(control.header)
 
-			#TODO: verify retraction
+			#Verify retraction
+			self.retract_white_reference_stop_time = time.time()
+			self.acquire_dark_reading_elapsed_time = self.retract_white_reference_stop_time - self.retract_white_reference_start_time
+			if self.acquire_dark_reading_elapsed_time < EcoSpec.ACTUATOR_DELAY:
+				time.sleep(EcoSpec.ACTUATOR_DELAY - self.acquire_dark_reading_elapsed_time)
+
 			self.data_set_time = time.time()
 			print(self.data_set_time)
 			self.data_set_id   = time.strftime("%Y%m%d%H%M%S",         time.localtime(self.data_set_time))
@@ -259,6 +273,7 @@ class EcoSpec:
 			# Open the shutter and collect 10 subject matter readings
 
 			if optimize.header == 100 and acquire_dark_current_readings.spectrum_header.header == 100 and control.header == 100:
+				print "Acquire Subject Matter Readings 15x..."
 				for j in range(0, 14):
 					acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
 					self.subject_matter_results.append(acquire_subject_matter_readings)
@@ -277,7 +292,7 @@ class EcoSpec:
 					"""
 
 			self.activate_datalogger()
-			self.since_time    = time.strftime("%Y-%m-%dT%H:%M:%S.00", time.localtime(self.data_set_time))
+			self.since_time = time.strftime("%Y-%m-%dT%H:%M:%S.00", time.localtime(self.data_set_time))
 			self.save_spectrometer_readings()
 			self.spectrometer.close()
 
@@ -378,19 +393,19 @@ class EcoSpec:
 		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-white_reference.tsv"
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.white_reference_results)):
-			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.white_reference_results[i].to_tsv())
+			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.white_reference_results[i].to_tsv() + "\n")
 		file_handle.close()
 
 		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-dark_current.tsv"
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.dark_current_results)):
-			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.dark_current_results[i].to_tsv())
+			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.dark_current_results[i].to_tsv() + "\n")
 		file_handle.close()
 
 		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-subject_matter.tsv"
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.subject_matter_results)):
-			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.subject_matter_results[i].to_tsv())
+			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.subject_matter_results[i].to_tsv() + "\n")
 		file_handle.close()
 		return True
 

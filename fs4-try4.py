@@ -8,7 +8,7 @@ x = fieldspec4.FieldSpec4()
 
 print x
 
-x.open("146.137.13.115")
+x.open("146.137.13.117")
 
 v = x.version()
 
