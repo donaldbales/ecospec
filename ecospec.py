@@ -272,7 +272,7 @@ class EcoSpec:
 
 			# Open the shutter and collect 10 subject matter readings
 
-			if optimize.header == 100 and acquire_dark_current_readings.spectrum_header.header == 100 and control.header == 100:
+			if optimize.header == 100 and acquire_white_reference_readings.spectrum_header.header == 100 and acquire_dark_current_readings.spectrum_header.header == 100 and control.header == 100:
 				print "Acquire Subject Matter Readings 15x..."
 				for j in range(0, 14):
 					acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
