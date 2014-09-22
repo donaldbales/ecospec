@@ -26,7 +26,7 @@ class CR1000:
 		self.data_set_id = data_set_id
 		self.host        = host
 		self.port        = port
-		self.tables      = ("_9_Sec", "_01_Min", "_01_Hour", "_01_Day", "Status")
+		self.tables      = ("_9_Sec", "_01_Min", "_30_Min", "_01_Day", "Status")
 		for table in self.tables:
 			time_string  = "cr1000" #time.strftime("%Y%m%d%H%M%S")
 			data_file_path   = ecospec.EcoSpec.DATA_PATH + self.data_set_id + "-" + current_pantilt_position_string + "-" + time_string + "-" + table + ".csv"
