@@ -172,6 +172,7 @@ class EcoSpec:
 				if restore.header != 100:
 					restore = self.spectrometer.restore("1")
 
+			"""
 				print "restore.header: " + str(restore.header)
 				print "restore.errbyte: " + str(restore.errbyte)
 				for i in range(0, 200):
@@ -179,7 +180,8 @@ class EcoSpec:
 						print restore.names[i] + ": " + str(restore.values[i])
 				print "restore.count: " + str(restore.count)
 				print "restore.verify: " + str(restore.verify)
-			
+			"""
+
 			"""
 			a = self.spectrometer.abort()
 
@@ -393,8 +395,8 @@ class EcoSpec:
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.white_reference_results)):
 			if i == 0:
-				file_handle.write("data_set_id"               + delimiter + "pantilt_position"                     + delimiter + self.white_reference_results[i].to_csv_heading() + "\n")
-				file_handle.write('"' + self.data_set_id + '"'+ delimiter + self.current_pantilt_position_string() + delimiter + self.white_reference_results[i].to_csv()         + "\n")
+				file_handle.write("data_set_id"                + delimiter + "pantilt_position"                     + delimiter + self.white_reference_results[i].to_csv_heading() + "\n")
+				file_handle.write('"' + self.data_set_id + '"' + delimiter + self.current_pantilt_position_string() + delimiter + self.white_reference_results[i].to_csv()         + "\n")
 			else:
 				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.white_reference_results[i].to_csv() + "\n")
 		file_handle.close()
@@ -403,8 +405,8 @@ class EcoSpec:
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.dark_current_results)):
 			if i == 0:
-				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv_heading() + "\n")
-				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv()         + "\n")
+				file_handle.write(self.data_set_id + delimiter + "pantilt_position"                     + delimiter + self.dark_current_results[i].to_csv_heading() + "\n")
+				file_handle.write('"' + self.data_set_id + '"' + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv()         + "\n")
 			else:
 				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv() + "\n")
 		file_handle.close()
@@ -413,8 +415,8 @@ class EcoSpec:
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.subject_matter_results)):
 			if i == 0:
-				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv_heading() + "\n")
-				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv()         + "\n")
+				file_handle.write(self.data_set_id + delimiter + "pantilt_position"                     + delimiter + self.subject_matter_results[i].to_csv_heading() + "\n")
+				file_handle.write('"' + self.data_set_id + '"' + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv()         + "\n")
 			else:
 				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv() + "\n")
 		file_handle.close()
