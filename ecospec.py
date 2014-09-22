@@ -168,9 +168,12 @@ class EcoSpec:
 				print "version.type: " + str(version.type)
 
 				restore = self.spectrometer.restore("1")
+				print "restore.header: " + str(restore.header)
 
 				if restore.header != 100:
+					print "Trying restore again..."
 					restore = self.spectrometer.restore("1")
+					print "restore.header: " + str(restore.header)
 
 			"""
 				print "restore.header: " + str(restore.header)
@@ -181,6 +184,9 @@ class EcoSpec:
 				print "restore.count: " + str(restore.count)
 				print "restore.verify: " + str(restore.verify)
 			"""
+				else:
+				self.spectrometer.open(EcoSpec.FIELDSPEC4_HOST)
+					
 
 			"""
 			a = self.spectrometer.abort()
@@ -198,8 +204,10 @@ class EcoSpec:
 
 			# Optimize the spectrometer with the white reference in field of view
 			
-			optimize = self.spectrometer.optimize(fieldspec4.FieldSpec4.OPT_VNIR_SWIR1_SWIR2)
 			print "Optimize..."
+			optimize = self.spectrometer.optimize(fieldspec4.FieldSpec4.OPT_VNIR_SWIR1_SWIR2)
+			print "optimize.header: " + str(optimize.header)
+
 			"""
 			print "optimize.header: " + str(optimize.header)
 			print "optimize.errbyte: " + str(optimize.errbyte)
@@ -215,6 +223,7 @@ class EcoSpec:
 			if optimize.header == 100:
 				print "Acquire White Reference Readings..."
 				acquire_white_reference_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
+				print "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
 				self.white_reference_results.append(acquire_white_reference_readings)
 				"""
 				print "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
@@ -236,12 +245,15 @@ class EcoSpec:
 			self.retract_white_reference_start_time = time.time()
 
 			control = None
-			if optimize.header == 100 and acquire_white_reference_readings.spectrum_header.header == 100:
+			if optimize.header                                         == 100 and 
+			   acquire_white_reference_readings.spectrum_header.header == 100:
+			   	print "Close the shutter..."
 				control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.CLOSE_SHUTTER)
 				print "control.header: " + str(control.header)
 				if control.header == 100:
 					print "Acquire Dark Current Readings..."
 					acquire_dark_current_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "25", "0")
+					print "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
 					self.dark_current_results.append(acquire_dark_current_readings)
 					"""
 					print "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
@@ -256,6 +268,7 @@ class EcoSpec:
 						spectrum_data += str(acquire_dark_current_readings.spectrum_buffer[i])
 					print spectrum_data
 					"""
+			   	print "Open the shutter..."
 				control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.OPEN_SHUTTER)
 				print "control.header: " + str(control.header)
 
@@ -272,10 +285,14 @@ class EcoSpec:
 
 			# Open the shutter and collect 10 subject matter readings
 
-			if optimize.header == 100 and acquire_white_reference_readings.spectrum_header.header == 100 and acquire_dark_current_readings.spectrum_header.header == 100 and control.header == 100:
+			if optimize.header                                         == 100 and 
+			   acquire_white_reference_readings.spectrum_header.header == 100 and 
+			   acquire_dark_current_readings.spectrum_header.header    == 100 and 
+			   control.header                                          == 100:
 				print "Acquire Subject Matter Readings 15x..."
 				for j in range(0, 14):
 					acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
+					print "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
 					self.subject_matter_results.append(acquire_subject_matter_readings)
 					"""
 					print "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
