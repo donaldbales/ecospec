@@ -174,7 +174,7 @@ ASD FieldSpec4 Requirements
 		Set Gain
 		Set Offset
 		Gather subject readings
-
+http://www.mathworks.com/matlabcentral/fileexchange/31547-field-spectroscopy-facility-post-processing-toolbox/content/FSFPostProcessing1.3.8/importasd.m
 	
 	
 ASD FieldSpec4 Procedures

@@ -111,6 +111,156 @@ class FieldSpec4Acquire:
 			floats.append(fs4[i])
 		self.spectrum_buffer = floats
 	
+	def to_csv(self):
+		delimiter = ","
+		result = ""
+		result += str(self.spectrum_header.header) + delimiter 
+		result += str(self.spectrum_header.errbyte) + delimiter
+		result += str(self.spectrum_header.sample_count) + delimiter
+		result += str(self.spectrum_header.trigger) + delimiter
+		result += str(self.spectrum_header.voltage) + delimiter
+		result += str(self.spectrum_header.current) + delimiter
+		result += str(self.spectrum_header.temperature) + delimiter
+		result += str(self.spectrum_header.motor_current) + delimiter
+		result += str(self.spectrum_header.instrument_hours) + delimiter
+		result += str(self.spectrum_header.instrument_minutes) + delimiter
+		result += str(self.spectrum_header.instrument_type) + delimiter
+		result += str(self.spectrum_header.ab) + delimiter
+		result += str(self.spectrum_header.reserved0) + delimiter
+		result += str(self.spectrum_header.reserved1) + delimiter
+		result += str(self.spectrum_header.reserved2) + delimiter
+		result += str(self.spectrum_header.reserved3) + delimiter
+		#result += str(self.spectrum_header.v_header = FieldSpec4VnirHeader(fs4[16])
+		result += str(self.spectrum_header.v_header.it) + delimiter
+		result += str(self.spectrum_header.v_header.scans) + delimiter
+		result += str(self.spectrum_header.v_header.max_channel) + delimiter
+		result += str(self.spectrum_header.v_header.min_channel) + delimiter
+		result += str(self.spectrum_header.v_header.saturation) + delimiter
+		result += str(self.spectrum_header.v_header.shutter) + delimiter
+		result += str(self.spectrum_header.v_header.reserved0) + delimiter
+		result += str(self.spectrum_header.v_header.reserved1) + delimiter
+		result += str(self.spectrum_header.v_header.reserved2) + delimiter
+		result += str(self.spectrum_header.v_header.reserved3) + delimiter
+		result += str(self.spectrum_header.v_header.reserved4) + delimiter
+		result += str(self.spectrum_header.v_header.reserved5) + delimiter
+		result += str(self.spectrum_header.v_header.reserved6) + delimiter
+		result += str(self.spectrum_header.v_header.reserved7) + delimiter
+		result += str(self.spectrum_header.v_header.reserved8) + delimiter
+		result += str(self.spectrum_header.v_header.reserved9) + delimiter
+		#result += str(self.spectrum_header.s1_header = FieldSpec4SwirHeader(fs4[17])
+		result += str(self.spectrum_header.s1_header.tec_status) + delimiter
+		result += str(self.spectrum_header.s1_header.tec_current) + delimiter
+		result += str(self.spectrum_header.s1_header.max_channel) + delimiter
+		result += str(self.spectrum_header.s1_header.min_channel) + delimiter
+		result += str(self.spectrum_header.s1_header.saturation) + delimiter
+		result += str(self.spectrum_header.s1_header.a_scans) + delimiter
+		result += str(self.spectrum_header.s1_header.b_scans) + delimiter
+		result += str(self.spectrum_header.s1_header.dark_current) + delimiter
+		result += str(self.spectrum_header.s1_header.gain) + delimiter
+		result += str(self.spectrum_header.s1_header.offset) + delimiter
+		result += str(self.spectrum_header.s1_header.scansize1) + delimiter
+		result += str(self.spectrum_header.s1_header.scansize2) + delimiter
+		result += str(self.spectrum_header.s1_header.reserved0) + delimiter
+		result += str(self.spectrum_header.s1_header.reserved1) + delimiter
+		result += str(self.spectrum_header.s1_header.reserved2) + delimiter
+		result += str(self.spectrum_header.s1_header.reserved3) + delimiter
+		#result += str(self.spectrum_header.s2_header = FieldSpec4VnirHeader(fs4[18])
+		result += str(self.spectrum_header.s2_header.tec_status) + delimiter
+		result += str(self.spectrum_header.s2_header.tec_current) + delimiter
+		result += str(self.spectrum_header.s2_header.max_channel) + delimiter
+		result += str(self.spectrum_header.s2_header.min_channel) + delimiter
+		result += str(self.spectrum_header.s2_header.saturation) + delimiter
+		result += str(self.spectrum_header.s2_header.a_scans) + delimiter
+		result += str(self.spectrum_header.s2_header.b_scans) + delimiter
+		result += str(self.spectrum_header.s2_header.dark_current) + delimiter
+		result += str(self.spectrum_header.s2_header.gain) + delimiter
+		result += str(self.spectrum_header.s2_header.offset) + delimiter
+		result += str(self.spectrum_header.s2_header.scansize1) + delimiter
+		result += str(self.spectrum_header.s2_header.scansize2) + delimiter
+		result += str(self.spectrum_header.s2_header.reserved0) + delimiter
+		result += str(self.spectrum_header.s2_header.reserved1) + delimiter
+		result += str(self.spectrum_header.s2_header.reserved2) + delimiter
+		result += str(self.spectrum_header.s2_header.reserved3) + delimiter
+		for i in range(0, len(self.spectrum_buffer)):
+			result += str(self.spectrum_buffer[i]) + delimiter
+		return result
+
+
+	def to_csv_heading(self):
+		delimiter = ","
+		result = ""
+		result += "header" + delimiter 
+		result += "errbyte" + delimiter
+		result += "sample_count" + delimiter
+		result += "trigger" + delimiter
+		result += "voltage" + delimiter
+		result += "current" + delimiter
+		result += "temperature" + delimiter
+		result += "motor_current" + delimiter
+		result += "instrument_hours" + delimiter
+		result += "instrument_minutes" + delimiter
+		result += "instrument_type" + delimiter
+		result += "ab" + delimiter
+		result += "reserved0" + delimiter
+		result += "reserved1" + delimiter
+		result += "reserved2" + delimiter
+		result += "reserved3" + delimiter
+		#result += str(self.spectrum_header.v_header = FieldSpec4VnirHeader(fs4[16])
+		result += "vnir_it" + delimiter
+		result += "vnir_scans" + delimiter
+		result += "vnir_max_channel" + delimiter
+		result += "vnir_min_channel" + delimiter
+		result += "vnir_saturation" + delimiter
+		result += "vnir_shutter" + delimiter
+		result += "vnir_reserved0" + delimiter
+		result += "vnir_reserved1" + delimiter
+		result += "vnir_reserved2" + delimiter
+		result += "vnir_reserved3" + delimiter
+		result += "vnir_reserved4" + delimiter
+		result += "vnir_reserved5" + delimiter
+		result += "vnir_reserved6" + delimiter
+		result += "vnir_reserved7" + delimiter
+		result += "vnir_reserved8" + delimiter
+		result += "vnir_reserved9" + delimiter
+		#result += str(self.spectrum_header.s1_header = FieldSpec4SwirHeader(fs4[17])
+		result += "swir1_tec_status" + delimiter
+		result += "swir1_tec_current" + delimiter
+		result += "swir1_max_channel" + delimiter
+		result += "swir1_min_channel" + delimiter
+		result += "swir1_saturation" + delimiter
+		result += "swir1_a_scans" + delimiter
+		result += "swir1_b_scans" + delimiter
+		result += "swir1_dark_current" + delimiter
+		result += "swir1_gain" + delimiter
+		result += "swir1_offset" + delimiter
+		result += "swir1_scansize1" + delimiter
+		result += "swir1_scansize2" + delimiter
+		result += "swir1_reserved0" + delimiter
+		result += "swir1_reserved1" + delimiter
+		result += "swir1_reserved2" + delimiter
+		result += "swir1_reserved3" + delimiter
+		#result += str(self.spectrum_header.s2_header = FieldSpec4VnirHeader(fs4[18])
+		result += "swir2_tec_status" + delimiter
+		result += "swir2_tec_current" + delimiter
+		result += "swir2_max_channel" + delimiter
+		result += "swir2_min_channel" + delimiter
+		result += "swir2_saturation" + delimiter
+		result += "swir2_a_scans" + delimiter
+		result += "swir2_b_scans" + delimiter
+		result += "swir2_dark_current" + delimiter
+		result += "swir2_gain" + delimiter
+		result += "swir2_offset" + delimiter
+		result += "swir2_scansize1" + delimiter
+		result += "swir2_scansize2" + delimiter
+		result += "swir2_reserved0" + delimiter
+		result += "swir2_reserved1" + delimiter
+		result += "swir2_reserved2" + delimiter
+		result += "swir2_reserved3" + delimiter
+		for i in range(0, len(self.spectrum_buffer)):
+			result += "spectrum" + str(i) + delimiter
+		return result
+
+
 	def to_tsv(self):
 		delimiter = "\t"
 		result = ""

@@ -172,7 +172,6 @@ class EcoSpec:
 				if restore.header != 100:
 					restore = self.spectrometer.restore("1")
 
-				"""
 				print "restore.header: " + str(restore.header)
 				print "restore.errbyte: " + str(restore.errbyte)
 				for i in range(0, 200):
@@ -180,7 +179,6 @@ class EcoSpec:
 						print restore.names[i] + ": " + str(restore.values[i])
 				print "restore.count: " + str(restore.count)
 				print "restore.verify: " + str(restore.verify)
-				"""
 			
 			"""
 			a = self.spectrometer.abort()
@@ -390,22 +388,35 @@ class EcoSpec:
 
 	def save_spectrometer_readings(self):
 		print "EcoSpec.save_spectrometer_readings()..."
-		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-white_reference.tsv"
+		delimiter = ","
+		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-white_reference.csv"
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.white_reference_results)):
-			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.white_reference_results[i].to_tsv() + "\n")
+			if i == 0:
+				file_handle.write("data_set_id"               + delimiter + "pantilt_position"                     + delimiter + self.white_reference_results[i].to_csv_heading() + "\n")
+				file_handle.write('"' + self.data_set_id + '"'+ delimiter + self.current_pantilt_position_string() + delimiter + self.white_reference_results[i].to_csv()         + "\n")
+			else:
+				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.white_reference_results[i].to_csv() + "\n")
 		file_handle.close()
 
-		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-dark_current.tsv"
+		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-dark_current.csv"
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.dark_current_results)):
-			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.dark_current_results[i].to_tsv() + "\n")
+			if i == 0:
+				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv_heading() + "\n")
+				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv()         + "\n")
+			else:
+				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.dark_current_results[i].to_csv() + "\n")
 		file_handle.close()
 
-		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-subject_matter.tsv"
+		file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-subject_matter.csv"
 		file_handle = open(file_name, "w")
 		for i in range(0, len(self.subject_matter_results)):
-			file_handle.write(self.data_set_id + "\t" + "0" + "\t" + self.subject_matter_results[i].to_tsv() + "\n")
+			if i == 0:
+				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv_heading() + "\n")
+				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv()         + "\n")
+			else:
+				file_handle.write(self.data_set_id + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv() + "\n")
 		file_handle.close()
 		return True
 
