@@ -1,0 +1,100 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:             ecospecd
+# Required-Start:       $remote_fs $syslog
+# Required-Stop:        $remote_fs $syslog
+# Default-Start:        2 3 4 5
+# Default-Stop:
+# Short-Description:    EcoSpec
+### END INIT INFO
+
+#etc/init.d/ecospec: start and stop the EcoSpec daemon
+
+umask 000
+
+. /lib/lsb/init-functions
+
+#if [ -n "$2" ]; then
+#    SSHD_OPTS="$SSHD_OPTS $2"
+#fi
+
+# Are we running from init?
+run_by_init() {
+    ([ "$previous" ] && [ "$runlevel" ]) || [ "$runlevel" = S ]
+}
+
+export PATH="${PATH:+$PATH:}/usr/sbin:/sbin:/home/ecospec"
+
+case "$1" in
+  start)
+        log_daemon_msg "Starting Ecospec" "ecospecd " || true
+        if (ps -A | grep ecospecd); then
+            log_daemon_msg "EcoSpec is already running!" "ecospecd" || true
+            log_end_msg 0 || true
+            exit 0
+        fi
+        if (start-stop-daemon --start --verbose --make-pidfile --background --pidfile /var/run/ecospecd.pid --exec /home/ecospec/ecospecd); then
+            log_end_msg 0 || true
+        else
+            log_end_msg 1 || true
+        fi
+        ;;
+  stop)
+        log_daemon_msg "Stopping Ecospec" "ecospecd " || true
+        if start-stop-daemon --stop --verbose --oknodo --signal 9 --pidfile /var/run/ecospecd.pid; then
+            log_end_msg 0 || true
+        else
+            log_end_msg 1 || true
+        fi
+        ;;
+
+  reload|force-reload)
+        log_daemon_msg "Reloading Ecospec is not supported" "ecospecd " || true
+        ;;
+
+  restart)
+        log_daemon_msg "Restarting Ecospec" "ecospecd " || true
+        start-stop-daemon --stop --verbose --oknodo --signal 9 --retry 30 --pidfile /var/run/ecospecd.pid
+        if (start-stop-daemon --start --verbose --make-pidfile --background --pidfile /var/run/ecospecd.pid --exec /home/ecospec/ecospecd); then
+            log_end_msg 0 || true
+        else
+            log_end_msg 1 || true
+        fi
+        ;;
+
+  try-restart)
+        log_daemon_msg "Restarting EcoSpec" "ecospecd " || true
+        RET=0
+        start-stop-daemon --stop --verbose --signal 9 --retry 30 --pidfile /var/run/ecospecd.pid || RET="$?"
+        case $RET in
+            0)
+                # old daemon stopped
+                if (start-stop-daemon --start --verbose --make-pidfile --background --pidfile /var/run/ecospecd.pid --exec /home/ecospec/ecospecd); then
+                    log_end_msg 0 || true
+                else
+                    log_end_msg 1 || true
+                fi
+                ;;
+            1)
+                # daemon not running
+                log_progress_msg "(not running)" || true
+                log_end_msg 0 || true
+                ;;
+            *)
+                # failed to stop
+                log_progress_msg "(failed to stop)" || true
+                log_end_msg 1 || true
+                ;;
+        esac
+        ;;
+
+  status)
+        status_of_proc -p /var/run/ecospecd.pid /home/ecospec/ecospecd ecospecd && exit 0 || exit $?
+        ;;
+
+  *)
+        log_action_msg "Usage: /etc/init.d/ecospec {start|stop|reload|force-reload|restart|try-restart|status}" || true
+        exit 1
+esac
+
+exit 0

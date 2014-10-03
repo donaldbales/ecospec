@@ -1,0 +1,91 @@
+init processing
+
+
+
+There are currently 3 main init systems used by linux. A few years ago, there was just one, SysVinit. But SysVinit was seriously lacking in capabilities such as service dependency graphing, so it's been deprecated in most distros by now. Currently most distros are switching to systemd. Though there is also upstart.
+
+But here's the answer to your question for each of the 3 init systems:
+
+ 
+SysVinit
+
+SysVinit currently used by Debian and RedHat. Though the next version of RedHat (7) will be using systemd.
+
+The univeral way of enabling SysVinit services on boot is to symlink them in /etc/rc3.d (or /etc/rc2.d). All services can be found in /etc/init.d. Note however that distros will often have their own tool for managing these files, and that tool should be used instead. (Fedora/RedHat has service and chkconfig, ubuntu has update-rc.d)
+List services:
+
+ls /etc/init.d/
+
+Start service:
+
+/etc/init.d/{SERVICENAME} start
+
+Stop service:
+
+/etc/init.d/{SERVICENAME} stop
+
+Enable service:
+
+cd /etc/rc3.d
+ln -s ../init.d/{SERVICENAME} S95{SERVICENAME}
+
+(the S95 is used to specify order. S01 will start before S02, etc)
+Disable service:
+
+rm /etc/rc3.d/*{SERVICENAME}
+
+ 
+Systemd
+
+The most notable distribution using systemd is Fedora. Though it is used by many others. Additionally, with Debian having chosen to go with systemd over upstart, it will become the defacto upstart system for most distributions (ubuntu has already announced they will be dropping upstart for systemd).
+List services:
+
+systemctl list-unit-files
+
+Start service:
+
+systemctl start {SERVICENAME}
+
+Stop service:
+
+systemctl stop {SERVICENAME}
+
+Enable service:
+
+systemctl enable {SERVICENAME}
+
+Disable service:
+
+systemctl disable {SERVICENAME}
+
+ 
+Upstart
+
+Upstart was developed by the Ubuntu folks. But after debian decided to go with systemd, Ubuntu announced they would drop upstart.
+
+Upstart was also briefly used by RedHat, as it is present in RHEL-6, but it is not commonly used.
+List services:
+
+initctl list
+
+Start service:
+
+initctl start {SERVICENAME}
+
+Stop service:
+
+initctl stop {SERVICENAME}
+
+Enable service:
+
+2 ways unfortunately:
+
+    There will be a file /etc/default/{SERVICENAME} which contains a line ENABLED=.... Change this line to ENABLED=1.
+
+    There will be a file /etc/init/{SERVICENAME}.override. Make sure it contains start (or is absent entirely), not manual.
+
+Disable service:
+
+echo manual > /etc/init/{SERVICENAME}.override
+
+Note: There is also the 'OpenRC' init system which is used by Gentoo. Currently Gentoo is the only distro which uses it, and it is not being considered for use, nor supported by any other distro. So I am not covering it's usage (though if opinion is that I do, I can add it).
