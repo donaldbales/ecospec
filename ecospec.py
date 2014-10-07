@@ -420,7 +420,7 @@ class EcoSpec:
 		#print "sunset:  " + str(sunset_datetime)		
 
 		print sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S')
-		return time.localtime(time.strptime(sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S'))
+		return time.mktime(time.strptime(sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S'))
 
 
 	def calculate_sunset(self):
@@ -485,7 +485,7 @@ class EcoSpec:
 		#print "sunset:  " + str(sunset_datetime)		
 
 		print sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S')
-		return time.localtime(time.strptime(sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S'))
+		return time.mktime(time.strptime(sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S'))
 
 
 	def extend_white_reference_arm(self):
