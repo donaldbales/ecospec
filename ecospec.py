@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # ecospec.py - Ecospec Instrumenation Package Main Program
