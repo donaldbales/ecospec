@@ -355,26 +355,134 @@ class EcoSpec:
 
 	def calculate_sunrise(self):
 		print "EcoSpec.calculate_sunrise()..."
-		now_tuple = time.localtime()
-		now_list = list(now_tuple)
-		now_list[3] = 5
-		now_list[4] = 0
-		now_list[5] = 0
-		result = time.mktime(tuple(now_list))
-		print(result)
-		return result
+
+		today_datetime = datetime.datetime.today()
+		today_string   = today_datetime.strftime("%Y%m%d")
+		#print 'today_datetime: ' + str(type(today_datetime))
+		#print 'today_datetime: ' + str(today_datetime)
+		#print 'today_string:   ' + today_string
+
+		#Make an observer
+		observer      = ephem.Observer()
+
+		#PyEphem takes and returns only UTC times. 15:00 is noon in observerericton
+		#observer_datetime = datetime.datetime(2014,10,7,0,0,0)
+		#observer_datetime = datetime.datetime(2014,10,8,5,0,0)
+		observer_datetime = datetime.datetime.utcnow()
+		observer.date = observer_datetime
+		#print 'observer.date:  ' + str(type(observer.date))
+		#print 'observer.date:  ' + str(observer.date)
+
+		#Location of Batvia, IL
+		#41.848889, -88.308333
+		#Location of Fermilab in Batavia, IL
+		#41.850617, -88.263688
+		observer.lon  = str(-88.263688) #Note that lon should be in string format
+		observer.lat  = str(41.850617)      #Note that lat should be in string format
+
+		#Elevation of Batavia, IL (666 ft) in metres
+		observer.elev = 203
+
+		#To get U.S. Naval Astronomical Almanac values, use these settings
+		observer.pressure= 0
+		observer.horizon = '-0:34'
+
+		# Get the sunset time so we can compare it against the current time
+		sunset_datetime  = ephem.localtime(observer.next_setting(ephem.Sun())) #Sunset
+		sunset_string    = sunset_datetime.strftime("%Y%m%d")
+		if sunset_string != today_string:
+			sunset_datetime  = ephem.localtime(observer.previous_setting(ephem.Sun())) #Sunset
+
+		#print 'if ' + str(sunset_datetime) + ' < ' + str(ephem.localtime(observer.date)) + ":"
+		# If the sun has already set, get the next day's settings
+		if ephem.localtime(observer.date) > sunset_datetime:
+			today_datetime    = today_datetime + datetime.timedelta(days=1)
+			today_string      = today_datetime.strftime("%Y%m%d")
+			observer_datetime = observer_datetime + datetime.timedelta(days=1)
+			observer.date     = observer_datetime
+
+		sunrise_datetime = ephem.localtime(observer.next_rising(ephem.Sun())) #Sunrise
+		sunrise_string   = sunrise_datetime.strftime("%Y%m%d")
+		if sunrise_string != today_string:
+			sunrise_datetime = ephem.localtime(observer.previous_rising(ephem.Sun())) #Sunrise
+
+		sunset_datetime  = ephem.localtime(observer.next_setting(ephem.Sun())) #Sunset
+		sunset_string    = sunset_datetime.strftime("%Y%m%d")
+		if sunset_string != today_string:
+			sunset_datetime  = ephem.localtime(observer.previous_setting(ephem.Sun())) #Sunset
+
+		#print 'sunrise: ' + str(type(sunrise_datetime))
+		#print 'sunset: ' + str(type(sunset_datetime))
+		#print "sunrise: " + str(sunrise_datetime)
+		#print "sunset:  " + str(sunset_datetime)		
+
+		print sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+		return time.strptime(sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S')
 
 
 	def calculate_sunset(self):
-		print "EcoSpec.calculate_sunset()..."
-		now_tuple = time.localtime()
-		now_list = list(now_tuple)
-		now_list[3] = 19
-		now_list[4] = 0
-		now_list[5] = 0
-		result = time.mktime(tuple(now_list))
-		print(result)
-		return result
+		today_datetime = datetime.datetime.today()
+		today_string   = today_datetime.strftime("%Y%m%d")
+		#print 'today_datetime: ' + str(type(today_datetime))
+		#print 'today_datetime: ' + str(today_datetime)
+		#print 'today_string:   ' + today_string
+
+		#Make an observer
+		observer      = ephem.Observer()
+
+		#PyEphem takes and returns only UTC times. 15:00 is noon in observerericton
+		#observer_datetime = datetime.datetime(2014,10,7,0,0,0)
+		#observer_datetime = datetime.datetime(2014,10,8,5,0,0)
+		observer_datetime = datetime.datetime.utcnow()
+		observer.date = observer_datetime
+		#print 'observer.date:  ' + str(type(observer.date))
+		#print 'observer.date:  ' + str(observer.date)
+
+		#Location of Batvia, IL
+		#41.848889, -88.308333
+		#Location of Fermilab in Batavia, IL
+		#41.850617, -88.263688
+		observer.lon  = str(-88.263688) #Note that lon should be in string format
+		observer.lat  = str(41.850617)      #Note that lat should be in string format
+
+		#Elevation of Batavia, IL (666 ft) in metres
+		observer.elev = 203
+
+		#To get U.S. Naval Astronomical Almanac values, use these settings
+		observer.pressure= 0
+		observer.horizon = '-0:34'
+
+		# Get the sunset time so we can compare it against the current time
+		sunset_datetime  = ephem.localtime(observer.next_setting(ephem.Sun())) #Sunset
+		sunset_string    = sunset_datetime.strftime("%Y%m%d")
+		if sunset_string != today_string:
+			sunset_datetime  = ephem.localtime(observer.previous_setting(ephem.Sun())) #Sunset
+
+		#print 'if ' + str(sunset_datetime) + ' < ' + str(ephem.localtime(observer.date)) + ":"
+		# If the sun has already set, get the next day's settings
+		if ephem.localtime(observer.date) > sunset_datetime:
+			today_datetime    = today_datetime + datetime.timedelta(days=1)
+			today_string      = today_datetime.strftime("%Y%m%d")
+			observer_datetime = observer_datetime + datetime.timedelta(days=1)
+			observer.date     = observer_datetime
+
+		sunrise_datetime = ephem.localtime(observer.next_rising(ephem.Sun())) #Sunrise
+		sunrise_string   = sunrise_datetime.strftime("%Y%m%d")
+		if sunrise_string != today_string:
+			sunrise_datetime = ephem.localtime(observer.previous_rising(ephem.Sun())) #Sunrise
+
+		sunset_datetime  = ephem.localtime(observer.next_setting(ephem.Sun())) #Sunset
+		sunset_string    = sunset_datetime.strftime("%Y%m%d")
+		if sunset_string != today_string:
+			sunset_datetime  = ephem.localtime(observer.previous_setting(ephem.Sun())) #Sunset
+
+		#print 'sunrise: ' + str(type(sunrise_datetime))
+		#print 'sunset: ' + str(type(sunset_datetime))
+		#print "sunrise: " + str(sunrise_datetime)
+		#print "sunset:  " + str(sunset_datetime)		
+
+		print sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+		return time.strptime(sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S')
 
 
 	def extend_white_reference_arm(self):
