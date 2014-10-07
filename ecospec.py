@@ -25,9 +25,11 @@ except:
 
 import axis_q1604
 import cr1000
+import datetime
+import ephem
 import fieldspec4
-import ptu_d300
 import os
+import ptu_d300
 import sys
 import time
 
