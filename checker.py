@@ -9,7 +9,7 @@ import time
 while True:
   logfile = open('/var/log/checker.log' ,'a', 0)
 
-  logfile.write("Checking that ecospec.py is running at " + str(datetime.datetime.today()) + "...\n")
+  logfile.write("Checking if ecospec.py is running at " + str(datetime.datetime.today()) + "...\n")
   try:
     ecospec = subprocess.check_output("ps -A | grep ecospec", shell=True)
   except subprocess.CalledProcessError:
@@ -24,7 +24,7 @@ while True:
     logfile.write(ecospec + "\n")
   else:
     logfile.write("Yes it is.\n")
-  logfile.write('Checking that wvdial is running at ' + str(datetime.datetime.today()) + "...\n")
+  logfile.write('Checking if wvdial is running at ' + str(datetime.datetime.today()) + "...\n")
   try:
     wvdial = subprocess.check_output("ps -A | grep wvdial", shell=True)
   except subprocess.CalledProcessError:
@@ -39,10 +39,12 @@ while True:
     logfile.write(wvdial + "\n")
   else:
     logfile.write("Yes it is.\n")
+
   logfile.close()
-  
+  logfile = open('/var/log/checker.log' ,'a', 0)
 
   # Check the PiFace buttons for the next ten minutes
+  logfile.write('Checking if a pushbutton is being pressed at ' + str(datetime.datetime.today()) + "...\n")
   for i in range(1, (6 * 10)):
     if   pifacedigitalio.digital_read(0):
       logfile.write("PiFace pushbutton 1 pressed.  Shutting down.\n")
@@ -67,4 +69,6 @@ while True:
     else:
       pass
     time.sleep(10)	
+
+  logfile.close()
     
