@@ -6,6 +6,8 @@ import pifacedigitalio
 import subprocess
 import time
 
+pifacedigitalio.init()
+
 while True:
   logfile = open('/var/log/checker.log' ,'a', 0)
 
