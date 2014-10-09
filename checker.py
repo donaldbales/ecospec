@@ -1,43 +1,70 @@
 #!/usr/bin/python
 # checker
 # Make sure the critical EcoSpec components keep running
-import subprocess
 import datetime
+import pifacedigitalio
+import subprocess
+import time
 
 while True:
   logfile = open('/var/log/checker.log' ,'a', 0)
-  
+
   logfile.write("Checking that ecospec.py is running at " + str(datetime.datetime.today()) + "...\n")
   try:
-    ecospec = check_output("ps -A | grep ecospec", shell=True)
-  except CalledProcessError:
-    ecospec = ''
+    ecospec = subprocess.check_output("ps -A | grep ecospec", shell=True)
+  except subprocess.CalledProcessError:
+    ecospec = ""
   if (ecospec + ' ') == ' ':
     logfile.write("No it's not, so let's start it!\n")
     try:
-      ecospec = check_output("service ecospec start", shell=True)
-    except CalledProcessError as error:
-      logfile.write("CalledProcessError({0}): {1}".format(error.errno, error.strerror)  
-      ecospec = ''
+      ecospec = subprocess.check_output("service ecospec start", shell=True)
+    except subprocess.CalledProcessError as error:
+      logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
+      ecospec = ""
     logfile.write(ecospec + "\n")
-  else
-    logfile.write("Yes it is.")
-  fi
-  
+  else:
+    logfile.write("Yes it is.\n")
   logfile.write('Checking that wvdial is running at ' + str(datetime.datetime.today()) + "...\n")
   try:
-    wvdial = check_output("ps -A | grep wvdial", shell=True)
-  except CalledProcessError:
-    wvdial = ''
+    wvdial = subprocess.check_output("ps -A | grep wvdial", shell=True)
+  except subprocess.CalledProcessError:
+    wvdial = ""
   if (wvdial + ' ') == ' ':
     logfile.write("No it's not, so let's start it!\n")
     try:
-      wvdial = check_output("service wvdial start", shell=True)
-    except CalledProcessError as error:
-      logfile.write("CalledProcessError({0}): {1}".format(error.errno, error.strerror)  
-      wvdial = ''    
+      wvdial = subprocess.check_output("service wvdial start", shell=True)
+    except subprocess.CalledProcessError as error:
+      logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
+      wvdial = ""
     logfile.write(wvdial + "\n")
-  else
-    logfile.write("Yes it is.")
-  fi
+  else:
+    logfile.write("Yes it is.\n")
   logfile.close()
+  
+
+  # Check the PiFace buttons for the next ten minutes
+  for i in range(1, (6 * 10)):
+    if   pifacedigitalio.digital_read(0):
+      logfile.write("PiFace pushbutton 1 pressed.  Shutting down.\n")
+      try:
+        shutdown = subprocess.check_output("shutdown -h now", shell=True)
+      except subprocess.CalledProcessError as error:
+        logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
+        shutdown = ""
+      logfile.write(shutdown + "\n")
+    elif pifacedigitalio.digital_read(1):	
+      logfile.write("PiFace pushbutton 2 pressed.  Rebooting.\n")
+      try:
+        reboot = subprocess.check_output("reboot", shell=True)
+      except subprocess.CalledProcessError as error:
+        logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
+        reboot = ""
+      logfile.write(reboot + "\n")
+    elif pifacedigitalio.digital_read(2):
+      pass
+    elif pifacedigitalio.digital_read(3):
+      pass
+    else:
+      pass
+    time.sleep(10)	
+    
