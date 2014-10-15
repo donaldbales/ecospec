@@ -2,6 +2,8 @@ Installation
 Install
 apt-get
 
+https://github.com/piface/pifacedigitalio
+
 Make sure you are using the lastest version of Raspbian:
 
 $ sudo apt-get update

@@ -1,3 +1,8 @@
+update-rc.d <name> defaults NN
+update-rc.d -f <name> remove
+
+
+
 init processing
 
 
