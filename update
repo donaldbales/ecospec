@@ -13,6 +13,11 @@ wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fs4-try4.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu-try1.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu_d300.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/update
-chmod 666 *.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.checker
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.ecospec
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.wvdial
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.network.interfaces
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.wvdial.conf
+chmod 666 *
 chmod 775 update
 echo all updated!
