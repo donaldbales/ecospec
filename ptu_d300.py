@@ -85,14 +85,14 @@ class PtuD300:
     PAN_SPEED_RELATIVE         = "PD"
     PAN_STEP_MODE              = "WP"
 
-    RESET_DISABLED_ON_POWER_UP = "RD"              
+    RESET_DISABLED_ON_POWER_UP = "RD"
     RESET_ENABLED_ON_POWER_UP  = "RT"
     RESET_IMMEDIATELY          = "R"
     RESET_PAN_ONLY_ON_POWER_UP = "RP"
     RESET_PAN_TILT_ON_POWER_UP = "RE"
 
     STATUS_QUERY               = "O"
-    SUCCESSFUL                 ="*"
+    SUCCESSFUL                 = "*"
 
     TILT_ACCELERATION          = "TA"
     TILT_HALT                  = "HT"
@@ -122,54 +122,54 @@ class PtuD300:
         try:
             self.connection = serial.Serial(port, baud_rate, timeout=60.5)    
         except Exception, e:
-	    print e
+            print e
             raise Exception("Unable to open Serial port")
             exit
 
         self.connection.flushInput()
         self.connection.flushOutput()
-	self.send(PtuD300.FEEDBACK_VERBOSE)
+        self.send(PtuD300.FEEDBACK_VERBOSE)
         self.send(PtuD300.VERSION_QUERY)
         self.send(PtuD300.RESET_PAN_ONLY_ON_POWER_UP)
         self.send(PtuD300.DEFAULTS_SAVE)
         self.send(PtuD300.RESET_IMMEDIATELY)
-	self.send(PtuD300.PAN_AWAIT_COMPLETION)
-	self.send(PtuD300.STATUS_QUERY)
+        self.send(PtuD300.PAN_AWAIT_COMPLETION)
+        self.send(PtuD300.STATUS_QUERY)
 
-	self.send(PtuD300.PAN_POSITION_LIMIT_DISABLE)
+        self.send(PtuD300.PAN_POSITION_LIMIT_DISABLE)
 
-	result = str.split(self.send(PtuD300.PAN_SPEED_BASE))
-	#print result
-	self.pan_speed_base = int(result[6])
-	print("self.pan_speed_base: " + str(self.pan_speed_base))
+        result = str.split(self.send(PtuD300.PAN_SPEED_BASE))
+        #print result
+        self.pan_speed_base = int(result[6])
+        print("self.pan_speed_base: " + str(self.pan_speed_base))
 
-	result = str.split(self.send(PtuD300.PAN_SPEED_MAXIMUM))
-	#print result
-	self.pan_speed_maximum = int(result[6])
-	print("self.pan_speed_maximum: " + str(self.pan_speed_maximum))
+        result = str.split(self.send(PtuD300.PAN_SPEED_MAXIMUM))
+        #print result
+        self.pan_speed_maximum = int(result[6])
+        print("self.pan_speed_maximum: " + str(self.pan_speed_maximum))
 
-	result = str.split(self.send(PtuD300.PAN_ACCELERATION))
-	#print result
-	self.pan_acceleration = int(result[5])
-	print("self.pan_acceleration: " + str(self.pan_acceleration))
-	
-	result = str.split(self.send(PtuD300.PAN_POSITION_MINIMUM))
-	#print result
-	self.pan_position_minimum = int(result[6])
-	print("self.pan_position_minimum: " + str(self.pan_position_minimum))
+        result = str.split(self.send(PtuD300.PAN_ACCELERATION))
+        #print result
+        self.pan_acceleration = int(result[5])
+        print("self.pan_acceleration: " + str(self.pan_acceleration))
+        
+        result = str.split(self.send(PtuD300.PAN_POSITION_MINIMUM))
+        #print result
+        self.pan_position_minimum = int(result[6])
+        print("self.pan_position_minimum: " + str(self.pan_position_minimum))
 
-	result = str.split(self.send(PtuD300.PAN_POSITION_MAXIMUM))
-	#print result
-	self.pan_position_maximum = int(result[6])
-	print("self.pan_position_maximum: " + str(self.pan_position_maximum))
+        result = str.split(self.send(PtuD300.PAN_POSITION_MAXIMUM))
+        #print result
+        self.pan_position_maximum = int(result[6])
+        print("self.pan_position_maximum: " + str(self.pan_position_maximum))
 
-	result = str.split(self.send(PtuD300.PAN_RESOLUTION))
-	#print result
+        result = str.split(self.send(PtuD300.PAN_RESOLUTION))
+        #print result
         self.pan_resolution_in_seconds_per_arc = float(result[2])
         print("self.pan_resolution_in_seconds_per_arc: " + str(self.pan_resolution_in_seconds_per_arc))
 
-	self.send(PtuD300.PAN_POSITION_MINIMUM + str(self.degrees_to_positions(-170)))
-	self.send(PtuD300.PAN_POSITION_MAXIMUM + str(self.degrees_to_positions(170)))
+        self.send(PtuD300.PAN_POSITION_MINIMUM + str(self.degrees_to_positions(-170)))
+        self.send(PtuD300.PAN_POSITION_MAXIMUM + str(self.degrees_to_positions(170)))
 
     def send(self, command):    
         self.connection.flushInput()
@@ -184,7 +184,7 @@ class PtuD300:
     # 92.5714 seconds arc * 0.0002778 degrees = 0.025716 degrees
     def degrees_to_positions(self, degrees):
         result = int(degrees/(self.pan_resolution_in_seconds_per_arc * 0.0002778))
-	#print(str(degrees) + " degrees equals " + str(result) + " positions.")
+        #print(str(degrees) + " degrees equals " + str(result) + " positions.")
         return result
 
     
