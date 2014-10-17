@@ -82,7 +82,7 @@ class EcoSpec:
 		# Wait until 25 minutes before sunrise, then turn on the 
 		# rest of the equipment, in order to warm up the spectrometer
 		while time.time() < self.sunrise_time - EcoSpec.THIRTY_MINUTES:
-			time.sleep(ONE_MINUTE)
+			time.sleep(EcoSpec.ONE_MINUTE)
 		
 		self.power_up()
 

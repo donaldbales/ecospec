@@ -18,6 +18,21 @@ wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.wvdial
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.network.interfaces
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.wvdial.conf
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/checker.py
+
 chmod 666 *
+chmod 775 checker.py
+chmod 775 ecospec.py
 chmod 775 update
+
+cp etc.network.interfaces /etc/network/interfaces && chmod 666 /etc/network/interfaces
+cp etc.wvdial.conf        /etc/wvdial.conf        && chmod 666 /etc/wvdial.conf
+cp etc.init.d.checker     /etc/init.d/checker     && chmod 775 /etc/init.d/checker
+cp etc.init.d.ecospec     /etc/init.d/ecospec     && chmod 775 /etc/init.d/ecospec
+cp etc.init.d.wvdial      /etc/init.d/wvdial      && chmod 775 /etc/init.d/wvdial
+
+update-rc.d wvdial  defaults 95
+update-rc.d ecospec defaults 96
+update-rc.d checker defaults 97
+
 echo all updated!

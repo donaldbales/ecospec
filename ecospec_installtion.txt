@@ -1,0 +1,90 @@
+Installing Ecospec Software on Raspberry Pi
+
+default userid: pi
+default password: raspberry
+
+
+CONFIG
+------
+
+$ sudo raspi-config
+
+1. expand the file system
+
+2. change the password to ecospec
+
+4. I1. select en_US.UTF-8, on next screen select en_US.UTF-8 as the default
+
+4. I2. select US, Central
+
+4. I3. select Generic 104-key PC, Other, English US, English (US), The default..., No compose..., No
+
+8. A4. enable
+
+8. A5. yes
+
+Finish
+
+Reboot now? yes.
+
+Make sure you are using the lastest version of Raspbian:
+
+$ sudo -i
+
+$ apt-get update
+
+$ apt-get upgrade
+
+
+PIFACE
+------
+
+Install pifacecommon (for Python 3 and 2) with the following command:
+
+$ sudo -i 
+
+$ apt-get install python{,3}-pifacecommon
+
+$ apt-get install python{,3}-pifacedigitalio
+
+
+You will also need to set up automatic loading of the SPI kernel module which can be done with the lastest version of raspi-config. Run:
+
+$ sudo raspi-config
+
+Then navigate to Advanced Options, SPI and select yes.
+
+You may need to reboot.
+
+
+EPHEM (for calualting sunrise and sunset)
+-----------------------------------------
+
+sudo -i
+
+apt-get install python-dev
+
+apt-get install python-pip
+
+pip install ephem
+
+
+ECOSPEC
+-------
+
+$ sudo -i
+
+$ cd /home
+
+$ mkdir ecospec
+
+$ chmod 777 ecospec
+
+$ cd ecospec
+
+$ wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/update
+
+$ chmod 777 update
+
+$ ./update
+
