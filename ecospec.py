@@ -94,7 +94,16 @@ class EcoSpec:
 		# Collect data until sunset
 		while time.time() < self.sunset_time:
 			self.activate_pantilt()
-			self.activate_spectrometer()
+			try:
+				self.activate_spectrometer()
+			except:
+				# Darn if that spectrometer's TCP/IP interface doesn't respond sometimes!
+				# If that happens, power it off and on, the try again.
+				self.power_down()
+				self.power_up()
+				time.sleep(3)
+				self.activate_spectrometer()
+			
 			#if count > 99:
 			#	break
 			count += 1
