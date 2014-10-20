@@ -8,6 +8,8 @@ import time
 
 pifacedigitalio.init()
 
+time.sleep(10)
+
 while True:
   logfile = open('/var/log/checker.log' ,'a', 0)
 

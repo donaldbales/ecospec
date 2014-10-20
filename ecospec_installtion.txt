@@ -57,6 +57,14 @@ Then navigate to Advanced Options, SPI and select yes.
 You may need to reboot.
 
 
+WVDIAL
+------
+
+sudo -i
+
+apt-get install wvdial
+
+
 EPHEM (for calualting sunrise and sunset)
 -----------------------------------------
 
