@@ -72,7 +72,7 @@ class EcoSpec:
 			self.piface               = None
 		self.spectrometer             = None
 		
-		print len(self.pantilt_position + 1)
+		print (self.pantilt_position + 1)
 		print len(self.pantilt_positions)
 		
 		if (self.pantilt_position + 1) == len(self.pantilt_positions):
