@@ -74,7 +74,7 @@ class EcoSpec:
 		
 		print self.pantilt_positions.size()
 		
-		if self.pantilt_position + 1 == self.pantilt_positions.size():
+		if (self.pantilt_position + 1) == len(self.pantilt_positions):
 			print "That works!"
 		else:
 			print "That doesn't work!"
