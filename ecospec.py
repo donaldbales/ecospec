@@ -39,6 +39,7 @@ class EcoSpec:
 	AXIS_Q1604_HOST   = "146.137.13.119"
 	CR1000_HOST       = "146.137.13.118"
 	FIELDSPEC4_HOST   = "146.137.13.117"
+	PAN_TILE_DELAY    = 10
 	PAN_TILT_HOST     = "/dev/ttyUSB0"
 	POWER_RELAY       = 0
 	ACTUATOR_RELAY    = 1
@@ -72,14 +73,6 @@ class EcoSpec:
 			self.piface               = None
 		self.spectrometer             = None
 		
-		print (self.pantilt_position + 1)
-		print len(self.pantilt_positions)
-		
-		if (self.pantilt_position + 1) == len(self.pantilt_positions):
-			print "That works!"
-		else:
-			print "That doesn't work!"
-
 
 	def main(self):
 		print "EcoSpec.main()..."
@@ -155,6 +148,11 @@ class EcoSpec:
 		self.pantilt.send(ptu_d300.PtuD300.PAN_POSITION_ABSOLUTE + str(self.pantilt.degrees_to_positions(self.pantilt_positions[self.pantilt_position])))
 
 		result = self.pantilt.send(ptu_d300.PtuD300.PAN_AWAIT_COMPLETION)
+
+		# Add a manual delay while the pan-tilt makes the long journey around
+		if self.pantilt_position == 0:
+			time.sleep(EcoSpec.PAN_TILT_DELAY)
+
 		#print("result: '" + result +"'")
 		#print(result[2:4])
 		#if result[2:4] == "!P":
