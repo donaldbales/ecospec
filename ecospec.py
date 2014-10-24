@@ -71,6 +71,13 @@ class EcoSpec:
 			print("Can't access pifacedigitalio.")
 			self.piface               = None
 		self.spectrometer             = None
+		
+		print self.pantilt_positions.size()
+		
+		if self.pantilt_position + 1 == self.pantilt_positions.size():
+			print "That works!"
+		else:
+			print "That doesn't work!"
 
 
 	def main(self):
