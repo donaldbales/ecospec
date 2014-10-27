@@ -1,0 +1,16 @@
+#!/bin/bash
+echo Is checker.py running?
+ps -Al | grep checker || echo "No."
+
+echo Is ecospec.py running?
+ps -Al | grep ecospec || echo "No."
+
+echo Is PPP running?
+ps -Al | grep pppd || echo "No."
+
+echo Is wvdial running?
+ps -Al | grep wvdial || echo "No."
+
+echo Can we ping google.com?
+ping -c 3 google.com || echo "No."
+

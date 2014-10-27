@@ -76,43 +76,60 @@ class EcoSpec:
 
 	def main(self):
 		print "EcoSpec.main()..."
-		self.sunrise_time = self.calculate_sunrise()
-		self.since_time   = time.strftime("%Y-%m-%dT05:00:00.00")
-		self.sunset_time  = self.calculate_sunset()
+		try:
+			self.sunrise_time = self.calculate_sunrise()
+			self.since_time   = time.strftime("%Y-%m-%dT05:00:00.00")
+			self.sunset_time  = self.calculate_sunset()
 
-		# Wait until 25 minutes before sunrise, then turn on the 
-		# rest of the equipment, in order to warm up the spectrometer
-		while time.time() < self.sunrise_time - EcoSpec.THIRTY_MINUTES:
-			time.sleep(EcoSpec.ONE_MINUTE)
-		
-		self.power_up()
+			# Wait until 25 minutes before sunrise, then turn on the 
+			# rest of the equipment, in order to warm up the spectrometer
+			while time.time() < self.sunrise_time - EcoSpec.THIRTY_MINUTES:
+				time.sleep(EcoSpec.ONE_MINUTE)
 
-		# Wait until sunrise, then start collecting data
-		while time.time() < self.sunrise_time:
-			time.sleep(EcoSpec.ONE_MINUTE)
+			self.power_up()
 
-		count = 0
-		# Collect data until sunset
-		while time.time() < self.sunset_time:
-			self.activate_pantilt()
-			try:
-				self.activate_spectrometer()
-			except:
-				# Darn if that spectrometer's TCP/IP interface doesn't respond sometimes!
-				# If that happens, power it off and on, the try again.
-				self.power_down()
-				self.power_up()
-				time.sleep(3)
-				self.activate_spectrometer()
+			# Wait until sunrise, then start collecting data
+			while time.time() < self.sunrise_time:
+				time.sleep(EcoSpec.ONE_MINUTE)
+
+			count = 0
+			# Collect data until sunset
+			while time.time() < self.sunset_time:
+				self.activate_pantilt()
+				try:
+					self.activate_spectrometer()
+				except:
+					# Darn if that spectrometer's TCP/IP interface doesn't respond sometimes!
+					# If that happens, power it off and on, the try again.
+					self.power_down()
+					self.power_up()
+					time.sleep(3)
+					self.activate_spectrometer()
+
+				#if count > 99:
+				#	break
+				count += 1
+
+			self.power_down()
+
+			exit(0)
+		except:
+			if self.spectrometer:
+				self.spectrometer.abort()
+				self.spectrometer.close()
+				
+			self.retract_white_reference_arm()
+
+			if self.pantilt:
+				self.pantilt.send(ptu_d300.PtuD300.PAN_IMMEDIATELY)
+				self.pantilt.send(ptu_d300.PtuD300.PAN_POSITION_ABSOLUTE + "0")
+
+			time.sleep(3)
+
+			self.power_down()			
 			
-			#if count > 99:
-			#	break
-			count += 1
-		
-		self.power_down()
-
-		exit(0)
-
+			raise
+			
 
 	def get_next_position(self, current_position):
 		if current_position < 11:
@@ -346,10 +363,10 @@ class EcoSpec:
 			print  sys.exc_traceback
 			print "sys.exc_info(): " 
 			print  sys.exc_info()
-			if not self.spectrometer:
+			if self.spectrometer:
+				self.spectrometer.abort()
 				self.spectrometer.close()
 			raise
-
 
 		return True
 
