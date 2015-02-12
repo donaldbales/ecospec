@@ -65,7 +65,8 @@ class EcoSpec:
 		self.subject_matter_results   = []
 		self.pantilt                  = None
 		self.pantilt_position         = -1
-		self.pantilt_positions        = [-170, -139, -108, -77, -46, -15, 15, 46, 77, 108, 139, 170]
+		#self.pantilt_positions        = [-170, -139, -108, -77, -46, -15, 15, 46, 77, 108, 139, 170]
+		self.pantilt_positions        = [-143, -117, -91, -65, -39, -13, 13, 39, 65, 91, 117, 143]
 		try:
 			self.piface = pifacedigitalio.PiFaceDigital()
 		except:
@@ -149,16 +150,16 @@ class EcoSpec:
 		print "EcoSpec.activate_pantilt()..."
 
 		if not self.pantilt:
-			self.pantilt = ptu_d300.PtuD300('/dev/ttyUSB0', 38400)
+			self.pantilt = ptu_d300.PtuD300('/dev/ttyUSB0', 9600)
 
 		self.pantilt_position = self.get_next_position(self.pantilt_position)
 
 		if self.pantilt_position == 0:
 			self.pantilt.send(ptu_d300.PtuD300.STATUS_QUERY)
 			#self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(self.pantilt.pan_speed_maximum))
-			self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(1000))
+			self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(500))
 		else:
-			self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(1000))
+			self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(500))
 
 		self.pantilt.send(ptu_d300.PtuD300.PAN_IMMEDIATELY)
 
