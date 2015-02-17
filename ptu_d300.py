@@ -83,7 +83,13 @@ class PtuD300:
     PAN_SPEED_MAXIMUM          = "PU"
     PAN_SPEED_MINIMUM          = "PL"
     PAN_SPEED_RELATIVE         = "PD"
-    PAN_STEP_MODE              = "WP"
+    PAN_STEP_MODE_AUTO         = "WPA"
+    PAN_STEP_MODE_DEFAULT      = "WPH"
+    PAN_STEP_MODE_EIGHTH       = "WPE"
+    PAN_STEP_MODE_FULL         = "WPF"
+    PAN_STEP_MODE_HALF         = "WPH"
+    PAN_STEP_MODE_QUARTER      = "WPQ"
+    PAN_STEP_MODE_QUERY        = "WP"
 
     RESET_DISABLED_ON_POWER_UP = "RD"
     RESET_ENABLED_ON_POWER_UP  = "RT"
@@ -114,7 +120,13 @@ class PtuD300:
     TILT_SPEED_MAXIMUM         = "TU"
     TILT_SPEED_MINIMUM         = "TL"
     TILT_SPEED_RELATIVE        = "TD"
-    TILT_STEP_MODE             = "WT"
+    TILT_STEP_MODE_AUTO        = "WTA"
+    TILT_STEP_MODE_DEFAULT     = "WTH"
+    TILT_STEP_MODE_EIGHTH      = "WTE"
+    TILT_STEP_MODE_FULL        = "WTF"
+    TILT_STEP_MODE_HALF        = "WTH"
+    TILT_STEP_MODE_QUARTER     = "WTQ"
+    TILT_STEP_MODE_QUERY       = "WT"
 
     VERSION_QUERY              = "V"
 
@@ -130,46 +142,34 @@ class PtuD300:
         self.connection.flushOutput()
         self.send(PtuD300.FEEDBACK_VERBOSE)
         self.send(PtuD300.VERSION_QUERY)
+        self.send(PtuD300.PAN_POSITION_LIMIT_DISABLE)
         self.send(PtuD300.RESET_PAN_ONLY_ON_POWER_UP)
-        self.send(PtuD300.DEFAULTS_SAVE)
-        self.send(PtuD300.RESET_IMMEDIATELY)
         self.send(PtuD300.PAN_AWAIT_COMPLETION)
         self.send(PtuD300.STATUS_QUERY)
 
-        self.send(PtuD300.PAN_POSITION_LIMIT_DISABLE)
-
         result = str.split(self.send(PtuD300.PAN_SPEED_BASE))
-        #print result
         self.pan_speed_base = int(result[6])
         print("self.pan_speed_base: " + str(self.pan_speed_base))
 
         result = str.split(self.send(PtuD300.PAN_SPEED_MAXIMUM))
-        #print result
         self.pan_speed_maximum = int(result[6])
         print("self.pan_speed_maximum: " + str(self.pan_speed_maximum))
 
         result = str.split(self.send(PtuD300.PAN_ACCELERATION))
-        #print result
         self.pan_acceleration = int(result[5])
         print("self.pan_acceleration: " + str(self.pan_acceleration))
         
         result = str.split(self.send(PtuD300.PAN_POSITION_MINIMUM))
-        #print result
         self.pan_position_minimum = int(result[6])
         print("self.pan_position_minimum: " + str(self.pan_position_minimum))
 
         result = str.split(self.send(PtuD300.PAN_POSITION_MAXIMUM))
-        #print result
         self.pan_position_maximum = int(result[6])
         print("self.pan_position_maximum: " + str(self.pan_position_maximum))
 
         result = str.split(self.send(PtuD300.PAN_RESOLUTION))
-        #print result
         self.pan_resolution_in_seconds_per_arc = float(result[2])
         print("self.pan_resolution_in_seconds_per_arc: " + str(self.pan_resolution_in_seconds_per_arc))
-
-        self.send(PtuD300.PAN_POSITION_MINIMUM + str(self.degrees_to_positions(-170)))
-        self.send(PtuD300.PAN_POSITION_MAXIMUM + str(self.degrees_to_positions(170)))
 
     def send(self, command):    
         self.connection.flushInput()

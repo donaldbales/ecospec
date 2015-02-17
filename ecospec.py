@@ -66,7 +66,8 @@ class EcoSpec:
 		self.pantilt                  = None
 		self.pantilt_position         = -1
 		#self.pantilt_positions        = [-170, -139, -108, -77, -46, -15, 15, 46, 77, 108, 139, 170]
-		self.pantilt_positions        = [-143, -117, -91, -65, -39, -13, 13, 39, 65, 91, 117, 143]
+		#self.pantilt_positions        = [-143, -117, -91, -65, -39, -13, 13, 39, 65, 91, 117, 143]
+		self.pantilt_positions        = [-90, 0, 90]
 		try:
 			self.piface = pifacedigitalio.PiFaceDigital()
 		except:
@@ -133,7 +134,7 @@ class EcoSpec:
 			
 
 	def get_next_position(self, current_position):
-		if current_position < 11:
+		if current_position < len(self.pantilt_positions) - 1:
 			next_position = current_position + 1
 		else:
 			next_position = 0
@@ -157,9 +158,9 @@ class EcoSpec:
 		if self.pantilt_position == 0:
 			self.pantilt.send(ptu_d300.PtuD300.STATUS_QUERY)
 			#self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(self.pantilt.pan_speed_maximum))
-			self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(500))
+			self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(1000))
 		else:
-			self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(500))
+			self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(1000))
 
 		self.pantilt.send(ptu_d300.PtuD300.PAN_IMMEDIATELY)
 
