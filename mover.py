@@ -44,8 +44,8 @@ def get_guid():
 # Register the streaming http handlers with urllib2
 register_openers()
 
-#data_path = '/home/ecospec/data'
-data_path = '.'
+data_path = '/home/ecospec/data'
+#data_path = '.'
 all_files = os.listdir(data_path)
 all_files.sort
 files = []
