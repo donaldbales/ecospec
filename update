@@ -1,5 +1,9 @@
 #!/bin/bash
 
+mkdir     poster
+chown pi  poster
+chmod 777 poster
+
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/extend_white_reference_arm.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/retract_white_reference_arm.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/power_up.py
@@ -25,7 +29,13 @@ wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu-try1.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu_d300.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/status
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/update
+cd poster
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/poster/streaminghttp.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/poster/encode.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/poster/__init__.py
+cd ..
 
+chown pi *
 chmod 666 *
 
 chmod 775 extend_white_reference_arm.py
@@ -34,6 +44,7 @@ chmod 775 power_down.py
 chmod 775 ecospec.py
 chmod 775 checker.py
 chmod 775 retract_white_reference_arm.py
+chmod 775 mover.py
 chmod 775 status
 chmod 775 update
 chmod 775 update_ecospec
