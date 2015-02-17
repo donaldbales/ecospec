@@ -1,5 +1,10 @@
 #!/bin/bash
 
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/extend_white_reference_arm.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/retract_white_reference_arm.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/power_up.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/power_down.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/mover.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/axis-try1.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/axis_q1604.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/checker.py
@@ -22,8 +27,13 @@ wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/status
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/update
 
 chmod 666 *
-chmod 775 checker.py
+
+chmod 775 extend_white_reference_arm.py
+chmod 775 power_up.py
+chmod 775 power_down.py
 chmod 775 ecospec.py
+chmod 775 checker.py
+chmod 775 retract_white_reference_arm.py
 chmod 775 status
 chmod 775 update
 chmod 775 update_ecospec
