@@ -11,7 +11,7 @@ pifacedigitalio.init()
 time.sleep(10)
 
 while True:
-  logfile = open('/var/log/checker.log' ,'a', 0)
+  logfile = open('/var/log/checker/checker.log' ,'a', 0)
 
   logfile.write("Checking if ecospec.py is running at " + str(datetime.datetime.today()) + "...\n")
   try:
@@ -28,6 +28,7 @@ while True:
     logfile.write(ecospec + "\n")
   else:
     logfile.write("Yes it is.\n")
+
   logfile.write('Checking if wvdial is running at ' + str(datetime.datetime.today()) + "...\n")
   try:
     wvdial = subprocess.check_output("ps -A | grep wvdial", shell=True)
@@ -45,12 +46,14 @@ while True:
     logfile.write("Yes it is.\n")
 
   logfile.close()
-  logfile = open('/var/log/checker.log' ,'a', 0)
+  logfile = open('/var/log/checker/checker.log' ,'a', 0)
 
   # Check the PiFace buttons for the next ten minutes
+  # 10 minutes = 600 seconds.  600 seconds / 5 seconds = 120
   logfile.write('Checking if a pushbutton is being pressed at ' + str(datetime.datetime.today()) + "...\n")
-  for i in range(1, (6 * 10)):
+  for i in range(0, 120):
     if   pifacedigitalio.digital_read(0):
+      # Shutdown now
       logfile.write("PiFace pushbutton 1 pressed.  Shutting down.\n")
       try:
         shutdown = subprocess.check_output("shutdown -h now", shell=True)
@@ -59,6 +62,7 @@ while True:
         shutdown = ""
       logfile.write(shutdown + "\n")
     elif pifacedigitalio.digital_read(1):	
+      # Reboot now      
       logfile.write("PiFace pushbutton 2 pressed.  Rebooting.\n")
       try:
         reboot = subprocess.check_output("reboot", shell=True)
@@ -67,12 +71,26 @@ while True:
         reboot = ""
       logfile.write(reboot + "\n")
     elif pifacedigitalio.digital_read(2):
-      pass
+      # Stop ecospec and extend the actuator arm
+      logfile.write("PiFace pushbutton 3 pressed.  \n")
+      #try:
+        #shutdown = subprocess.check_output("shutdown -h now", shell=True)
+      #except subprocess.CalledProcessError as error:
+        #logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
+        #shutdown = ""
+      #logfile.write(shutdown + "\n")
     elif pifacedigitalio.digital_read(3):
-      pass
+      # Stop retract the actuator arm and start ecospec
+      logfile.write("PiFace pushbutton 4 pressed.  \n")
+      #try:
+        #shutdown = subprocess.check_output("shutdown -h now", shell=True)
+      #except subprocess.CalledProcessError as error:
+        #logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
+        #shutdown = ""
+      #logfile.write(shutdown + "\n")
     else:
       pass
-    time.sleep(10)	
+    time.sleep(5)	
 
   logfile.close()
     

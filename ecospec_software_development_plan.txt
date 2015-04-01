@@ -230,6 +230,12 @@ Incoming Server Port Numbers: 995.
 Outgoing mail server (SMTP): smtp.verizon.net.
 
 
+FLIR (formerly Directed Perception)
+Support: http://www.flir.com/mcs/view/?id=55078
+http://www.flir.com/mcs/support/secure/index.cfm
+mcs-support@flir.com
+650-692-3900
+
 Irradiance, Inc. RSR2 (Licor LI-200SZ)
 	N/A?
 
@@ -319,6 +325,7 @@ Cisco Router WAN  C8:D7:19:CF:23:C2  146.137.13.114   7, 22, 80, 123, 443,
                                                       11007, 11022, 11080, 
                                                       12007, 12022, 12080
 RPi primary       B8:27:EB:9F:60:F3  146.137.13.115   7, 22, 80, 123
+  via Verizon celluar modem          166.139.57.251
 RPi backup        B8:27:EB:EE:4C:47  146.137.13.116   7, 22, 80, 123
 FS4 Spectrometer  00:03:F4:06:BA:E3  146.137.13.117   7, 22, 123, 8080
 CS Datalogger     00:D0:2C:05:03:24  146.137.13.118   7, 22, 123, 80

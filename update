@@ -17,6 +17,7 @@ wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/cr1000.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ecospec.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.checker
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.ecospec
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.mover
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.wvdial
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.network.interfaces
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.wvdial.conf
@@ -53,10 +54,12 @@ cp etc.network.interfaces /etc/network/interfaces && chmod 666 /etc/network/inte
 cp etc.wvdial.conf        /etc/wvdial.conf        && chmod 666 /etc/wvdial.conf
 cp etc.init.d.checker     /etc/init.d/checker     && chmod 775 /etc/init.d/checker
 cp etc.init.d.ecospec     /etc/init.d/ecospec     && chmod 775 /etc/init.d/ecospec
+cp etc.init.d.mover       /etc/init.d/mover       && chmod 775 /etc/init.d/mover
 cp etc.init.d.wvdial      /etc/init.d/wvdial      && chmod 775 /etc/init.d/wvdial
 
 update-rc.d wvdial  defaults 95
 update-rc.d ecospec defaults 96
 update-rc.d checker defaults 97
+update-rc.d mover   defaults 98
 
 echo all updated!

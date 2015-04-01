@@ -1,6 +1,6 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:          ecospec
+# Provides:          mover
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -17,9 +17,9 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin:/home/ecospec:
-DESC="EcoSpec"
-NAME="ecospec.py"
-DAEMON="/home/ecospec/ecospec.py"
+DESC="Mover"
+NAME="mover.py"
+DAEMON="/home/ecospec/mover.py"
 DAEMON_ARGS=""
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
