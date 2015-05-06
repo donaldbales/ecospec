@@ -11,9 +11,11 @@ import time
 
 actuator_under_control = False
 
-pifacedigitalio.init()
+#pifacedigitalio.init()
 
 time.sleep(10)
+
+x = piface.PiFace()
 
 while True:
   logfile = open('/var/log/checker/checker.log' ,'a', 0)
@@ -57,7 +59,7 @@ while True:
   # Check the PiFace buttons for the next ten minutes
   logfile.write('Checking if a pushbutton is being pressed at ' + str(datetime.datetime.today()) + "...\n")
   for i in range(1, 120):
-    if   pifacedigitalio.digital_read(0):
+    if   x.digital_read(0):
       logfile.write("PiFace pushbutton 1 pressed.  Shutting down.\n")
       try:
         shutdown = subprocess.check_output("shutdown -h now", shell=True)
@@ -65,7 +67,7 @@ while True:
         logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
         shutdown = ""
       logfile.write(shutdown + "\n")
-    elif pifacedigitalio.digital_read(1):	
+    elif x.digital_read(1):	
       logfile.write("PiFace pushbutton 2 pressed.  Rebooting.\n")
       try:
         reboot = subprocess.check_output("reboot", shell=True)
@@ -73,7 +75,7 @@ while True:
         logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
         reboot = ""
       logfile.write(reboot + "\n")
-    elif pifacedigitalio.digital_read(2):
+    elif x.digital_read(2):
       logfile.write("PiFace pushbutton 3 pressed.  Extending actuator.\n")
       actuator = ""
 
@@ -85,27 +87,27 @@ while True:
         actuator = ""
 
       try:
-        x = piface.PiFace()        
+        #x = piface.PiFace()        
         x.extend_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)
       except:
         logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
         logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
-        logfile.write("sys.exc_traceback: {0}\n".format(str(sys.exc_traceback)))
-        logfile.write("sys.exc_info(): {0}\n".format(str(sys.exc_info())))
+        logfile.write("sys.exc_traceback: {0}\n".format(sys.exc_traceback))
+        #logfile.write("sys.exc_info(): {0}\n".format(str(sys.exc_info())))
 
       logfile.write("{0}\n".format(str(actuator)))
-    elif pifacedigitalio.digital_read(3):
+    elif x.digital_read(3):
       logfile.write("PiFace pushbutton 4 pressed.  Retracting actuator.\n")
       actuator = ""
 
       try:
-        x = piface.PiFace()        
+        #x = piface.PiFace()        
         x.retract_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)
       except:
         logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
         logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
-        logfile.write("sys.exc_traceback: {0}\n".format(str(sys.exc_traceback)))
-        logfile.write("sys.exc_info(): {0}\n".format(str(sys.exc_info())))
+        logfile.write("sys.exc_traceback: {0}\n".format(sys.exc_traceback))
+        #logfile.write("sys.exc_info(): {0}\n".format(str(sys.exc_info())))
 
       try:
         actuator = subprocess.check_output("service ecospec start", shell=True)
