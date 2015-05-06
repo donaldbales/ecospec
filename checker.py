@@ -8,6 +8,7 @@ import piface
 import subprocess
 import sys
 import time
+import traceback
 
 actuator_under_control = False
 
