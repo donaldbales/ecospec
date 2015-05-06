@@ -90,10 +90,11 @@ while True:
         #x = piface.PiFace()        
         x.extend_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)
       except:
-        logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
-        logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
-        logfile.write("sys.exc_traceback: {0}\n".format(sys.exc_traceback))
+        #logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
+        #logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
+        #logfile.write("sys.exc_traceback: {0}\n".format(sys.exc_traceback))
         #logfile.write("sys.exc_info(): {0}\n".format(str(sys.exc_info())))
+        logfile.write("{0}\n".format(sys.exc_info()))
 
       logfile.write("{0}\n".format(str(actuator)))
     elif pifacedigitalio.digital_read(3):
@@ -104,10 +105,11 @@ while True:
         #x = piface.PiFace()        
         x.retract_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)
       except:
-        logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
-        logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
-        logfile.write("sys.exc_traceback: {0}\n".format(sys.exc_traceback))
+        #logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
+        #logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
+        #logfile.write("sys.exc_traceback: {0}\n".format(sys.exc_traceback))
         #logfile.write("sys.exc_info(): {0}\n".format(str(sys.exc_info())))
+        logfile.write("{0}\n".format(sys.exc_info()))
 
       try:
         actuator = subprocess.check_output("service ecospec start", shell=True)
