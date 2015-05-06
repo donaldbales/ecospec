@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # checker
 # Make sure the critical EcoSpec components keep running
+
 import datetime
 import ecospec
 import pifacedigitalio
@@ -23,18 +24,18 @@ while True:
 
   logfile.write("Checking if ecospec.py is running at " + str(datetime.datetime.today()) + "...\n")
   try:
-    ecospec = subprocess.check_output("ps -A | grep ecospec", shell=True)
+    result = subprocess.check_output("ps -A | grep ecospec", shell=True)
   except subprocess.CalledProcessError:
-    ecospec = ""
+    result = ""
   if not actuator_under_control:
-    if (ecospec + ' ') == ' ':
+    if (result + ' ') == ' ':
       logfile.write("No it's not, so let's start it!\n")
       try:
-        ecospec = subprocess.check_output("service ecospec start", shell=True)
+        result = subprocess.check_output("service ecospec start", shell=True)
       except subprocess.CalledProcessError as error:
         logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
-        ecospec = ""
-      logfile.write(ecospec + "\n")
+        result = ""
+      logfile.write(result + "\n")
     else:
       logfile.write("Yes it is.\n")
    
@@ -62,6 +63,7 @@ while True:
   for i in range(1, 120):
     if   pifacedigitalio.digital_read(0):
       logfile.write("PiFace pushbutton 1 pressed.  Shutting down.\n")
+      result = ""
       try:
         shutdown = subprocess.check_output("shutdown -h now", shell=True)
       except subprocess.CalledProcessError as error:
@@ -70,22 +72,23 @@ while True:
       logfile.write(shutdown + "\n")
     elif pifacedigitalio.digital_read(1):   
       logfile.write("PiFace pushbutton 2 pressed.  Rebooting.\n")
+      result = ""
       try:
-        reboot = subprocess.check_output("reboot", shell=True)
+        result = subprocess.check_output("reboot", shell=True)
       except subprocess.CalledProcessError as error:
         logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
-        reboot = ""
-      logfile.write(reboot + "\n")
+        result = ""
+      logfile.write(result + "\n")
     elif pifacedigitalio.digital_read(2):
       logfile.write("PiFace pushbutton 3 pressed.  Extending actuator.\n")
-      actuator = ""
+      result = ""
 
       try:
-        actuator = subprocess.check_output("service ecospec stop", shell=True)
+        result = subprocess.check_output("service ecospec stop", shell=True)
         actuator_under_control = True
       except subprocess.CalledProcessError as error:
         logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
-        actuator = ""
+        result = ""
 
       try:
         #x = piface.PiFace()        
@@ -101,10 +104,10 @@ while True:
         logfile.write("{0}\n".format(xvalue))
         traceback.print_tb(xtb, None, logfile)
 
-      logfile.write("{0}\n".format(str(actuator)))
+      logfile.write("{0}\n".format(str(result)))
     elif pifacedigitalio.digital_read(3):
       logfile.write("PiFace pushbutton 4 pressed.  Retracting actuator.\n")
-      actuator = ""
+      result = ""
 
       try:
         #x = piface.PiFace()        
@@ -121,13 +124,13 @@ while True:
         traceback.print_tb(xtb, None, logfile)
 
       try:
-        actuator = subprocess.check_output("service ecospec start", shell=True)
+        result = subprocess.check_output("service ecospec start", shell=True)
         actuator_under_control = False
       except subprocess.CalledProcessError as error:
         logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
-        actuator = ""
+        result = ""
 
-      logfile.write("{0}\n".format(str(actuator)))
+      logfile.write("{0}\n".format(str(result)))
     else:
       pass
     time.sleep(5)
