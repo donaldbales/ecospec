@@ -19,6 +19,7 @@
 
 try:
     import pifacedigitalio
+    pifacedigitalio.init()
 except:
     print("Can't import pifacedigitalio.")
 
