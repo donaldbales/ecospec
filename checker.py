@@ -16,7 +16,7 @@ pifacedigitalio.init()
 time.sleep(10)
 
 while True:
-  logfile = open('/var/log/checker.log' ,'a', 0)
+  logfile = open('/var/log/checker/checker.log' ,'a', 0)
 
   logfile.write("Checking if ecospec.py is running at " + str(datetime.datetime.today()) + "...\n")
   try:
@@ -52,7 +52,7 @@ while True:
     logfile.write("Yes it is.\n")
 
   logfile.close()
-  logfile = open('/var/log/checker.log' ,'a', 0)
+  logfile = open('/var/log/checker/checker.log' ,'a', 0)
 
   # Check the PiFace buttons for the next ten minutes
   logfile.write('Checking if a pushbutton is being pressed at ' + str(datetime.datetime.today()) + "...\n")
