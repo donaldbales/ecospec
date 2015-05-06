@@ -4,6 +4,7 @@
 import datetime
 import ecospec
 import pifacedigitalio
+import piface
 import subprocess
 import sys
 import time
