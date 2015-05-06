@@ -89,7 +89,7 @@ while True:
         logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
         logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
         logfile.write("sys.exc_traceback: ".format(str(sys.exc_traceback)))
-        logfile.write("sys.exc_info(): ".format(str(sys.exc_info()))
+        logfile.write("sys.exc_info(): ".format(str(sys.exc_info())))
 
       logfile.write("{0}\n".format(str(actuator)))
     elif pifacedigitalio.digital_read(3):
@@ -103,7 +103,7 @@ while True:
         logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
         logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
         logfile.write("sys.exc_traceback: ".format(str(sys.exc_traceback)))
-        logfile.write("sys.exc_info(): ".format(str(sys.exc_info()))
+        logfile.write("sys.exc_info(): ".format(str(sys.exc_info())))
 
       try:
         actuator = subprocess.check_output("service ecospec start", shell=True)
