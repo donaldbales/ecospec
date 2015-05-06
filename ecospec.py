@@ -112,7 +112,7 @@ class EcoSpec:
         # break
         count += 1
 
-            self.piface.power_down(EcoSpec.POWER_RELAY)
+        self.piface.power_down(EcoSpec.POWER_RELAY)
 
       exit(0)
     except:
