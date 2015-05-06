@@ -31,6 +31,7 @@ wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu_d300.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/retract_white_reference_arm.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/status
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/update
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/update_ecospec
 cd poster
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/poster/streaminghttp.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/poster/encode.py
@@ -49,7 +50,7 @@ chmod 775 retract_white_reference_arm.py
 chmod 775 mover.py
 chmod 775 status
 chmod 775 update
-chmod 775 update_ecospec
+#chmod 775 update_ecospec
 
 cp etc.network.interfaces /etc/network/interfaces && chmod 666 /etc/network/interfaces
 cp etc.wvdial.conf        /etc/wvdial.conf        && chmod 666 /etc/wvdial.conf
