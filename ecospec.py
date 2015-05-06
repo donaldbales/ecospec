@@ -236,7 +236,7 @@ class EcoSpec:
       print "abort.count: " + str(a.count)
       """
 
-        self.piface.extend_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
+      self.piface.extend_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
 
       time.sleep(EcoSpec.ACTUATOR_DELAY)
 
