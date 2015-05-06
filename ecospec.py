@@ -103,8 +103,8 @@ class EcoSpec:
         except:
           # Darn if that spectrometer's TCP/IP interface doesn't respond sometimes!
           # If that happens, power it off and on, the try again.
-            self.piface.power_down(EcoSpec.POWER_RELAY)
-            self.piface.power_up(EcoSpec.POWER_RELAY)
+          self.piface.power_down(EcoSpec.POWER_RELAY)
+          self.piface.power_up(EcoSpec.POWER_RELAY)
           time.sleep(3)
           self.activate_spectrometer()
 
