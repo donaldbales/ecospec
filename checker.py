@@ -5,6 +5,7 @@ import datetime
 import ecospec
 import pifacedigitalio
 import subprocess
+import sys
 import time
 
 actuator_under_control = False
