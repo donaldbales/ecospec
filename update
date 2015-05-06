@@ -4,11 +4,6 @@ mkdir     poster
 chown pi  poster
 chmod 777 poster
 
-wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/extend_white_reference_arm.py
-wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/retract_white_reference_arm.py
-wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/power_up.py
-wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/power_down.py
-wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/mover.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/axis-try1.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/axis_q1604.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/checker.py
@@ -21,13 +16,19 @@ wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.init.d.wvdial
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.network.interfaces
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/etc.wvdial.conf
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/extend_white_reference_arm.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fieldspec4.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fs4-try1.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fs4-try2.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fs4-try3.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/fs4-try4.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/mover.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/piface.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/power_down.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/power_up.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu-try1.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/ptu_d300.py
+wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/retract_white_reference_arm.py
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/status
 wget -N https://raw.githubusercontent.com/donaldbales/ecospec/master/update
 cd poster
