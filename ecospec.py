@@ -128,7 +128,7 @@ class EcoSpec:
 
       time.sleep(3)
 
-            self.piface.power_down(EcoSpec.POWER_RELAY)            
+      self.piface.power_down(EcoSpec.POWER_RELAY)            
       
       raise
       
