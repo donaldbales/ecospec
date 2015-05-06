@@ -126,7 +126,7 @@ class EcoSpec:
         self.spectrometer.abort()
         self.spectrometer.close()
         
-      self.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
+      self.piface.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
 
       if self.pantilt:
         self.pantilt.send(ptu_d300.PtuD300.PAN_IMMEDIATELY)
