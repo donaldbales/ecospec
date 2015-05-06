@@ -97,7 +97,12 @@ class EcoSpec:
       count = 0
       # Collect data until sunset
       while time.time() < self.sunset_time:
-        self.activate_pantilt()
+        try:
+          self.activate_pantilt()
+        except:
+          self.piface.power_down(EcoSpec.POWER_RELAY)
+          raise
+          
         try:
           self.activate_spectrometer()
         except:
@@ -113,6 +118,7 @@ class EcoSpec:
         count += 1
 
         self.piface.power_down(EcoSpec.POWER_RELAY)
+        self.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
 
       exit(0)
     except:
@@ -120,7 +126,7 @@ class EcoSpec:
         self.spectrometer.abort()
         self.spectrometer.close()
         
-      self.retract_white_reference_arm()
+      self.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
 
       if self.pantilt:
         self.pantilt.send(ptu_d300.PtuD300.PAN_IMMEDIATELY)
