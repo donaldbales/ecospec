@@ -18,6 +18,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Last updated by Don Bales on 2015-05-06
+
 import axis_q1604
 import cr1000
 import datetime
