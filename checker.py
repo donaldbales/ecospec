@@ -73,6 +73,7 @@ while True:
       logfile.write(reboot + "\n")
     elif pifacedigitalio.digital_read(2):
       logfile.write("PiFace pushbutton 3 pressed.  Extending actuator.\n")
+      actuator = ""
       try:
         actuator = subprocess.check_output("service ecospec stop", shell=True)
         actuator_under_control = True
@@ -90,6 +91,7 @@ while True:
       logfile.write(actuator + "\n")
     elif pifacedigitalio.digital_read(3):
       logfile.write("PiFace pushbutton 4 pressed.  Retracting actuator.\n")
+      actuator = ""
       try:
         x = piface.PiFace()        
         x.retract_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)
@@ -107,7 +109,7 @@ while True:
       logfile.write(actuator + "\n")
     else:
       pass
-    time.sleep(5)	
+    time.sleep(5)
 
   logfile.close()
     
