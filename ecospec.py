@@ -102,7 +102,6 @@ class EcoSpec:
         try:
           self.activate_pantilt()
         except:
-          self.piface.power_down(EcoSpec.POWER_RELAY)
           raise
           
         try:
