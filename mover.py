@@ -29,7 +29,7 @@ import settings
 
 def get_guid():
   ten = settings.TEN
-  #ten = "1_>C/_9j`'"
+  
   six = time.strftime("%Y %y %m %d %H %M").split()
   six[0] = six[0][0:2]
   sixteen = [ten[0:2]]
@@ -84,3 +84,4 @@ while True:
       print str(error)
   
   time.sleep(300)	
+

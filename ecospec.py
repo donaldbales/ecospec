@@ -18,17 +18,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-try:
-	import pifacedigitalio
-except:
-	print("Can't import pifacedigitalio.")
-
 import axis_q1604
 import cr1000
 import datetime
 import ephem
 import fieldspec4
 import os
+import piface
 import ptu_d300
 import sys
 import time
@@ -44,6 +40,7 @@ class EcoSpec:
 	POWER_RELAY       = 0
 	ACTUATOR_RELAY    = 1
 	ACTUATOR_DELAY    = 3
+    PRECIP_SENSOR     = 4
 	ONE_MINUTE        = 60
 	THIRTY_MINUTES    = 30 * 60
 
@@ -65,13 +62,16 @@ class EcoSpec:
 		self.subject_matter_results   = []
 		self.pantilt                  = None
 		self.pantilt_position         = -1
-		#self.pantilt_positions        = [-170, -139, -108, -77, -46, -15, 15, 46, 77, 108, 139, 170]
+        # Original. Defect in PTU software makes it reset in wrong direction.
+        #self.pantilt_positions        = [-170, -139, -108, -77, -46, -15, 15, 46, 77, 108, 139, 170] 
+        # For indorr testing; 3 positions
+        self.pantilt_positions = [-90, 0, 90]   
+        # For field use. Works-around the defect in PTU software makes it reset in wrong direction.
 		#self.pantilt_positions        = [-143, -117, -91, -65, -39, -13, 13, 39, 65, 91, 117, 143]
-		self.pantilt_positions        = [-90, 0, 90]
 		try:
-			self.piface = pifacedigitalio.PiFaceDigital()
+			self.piface = piface.PiFace()
 		except:
-			print("Can't access pifacedigitalio.")
+			print("Can't access piface.")
 			self.piface               = None
 		self.spectrometer             = None
 		
@@ -88,7 +88,7 @@ class EcoSpec:
 			while time.time() < self.sunrise_time - EcoSpec.THIRTY_MINUTES:
 				time.sleep(EcoSpec.ONE_MINUTE)
 
-			self.power_up()
+			self.piface.power_up(EcoSpec.POWER_RELAY)
 
 			# Wait until sunrise, then start collecting data
 			while time.time() < self.sunrise_time:
@@ -103,8 +103,8 @@ class EcoSpec:
 				except:
 					# Darn if that spectrometer's TCP/IP interface doesn't respond sometimes!
 					# If that happens, power it off and on, the try again.
-					self.power_down()
-					self.power_up()
+                    self.piface.power_down(EcoSpec.POWER_RELAY)
+                    self.piface.power_up(EcoSpec.POWER_RELAY)
 					time.sleep(3)
 					self.activate_spectrometer()
 
@@ -112,7 +112,7 @@ class EcoSpec:
 				#	break
 				count += 1
 
-			self.power_down()
+            self.piface.power_down(EcoSpec.POWER_RELAY)
 
 			exit(0)
 		except:
@@ -128,7 +128,7 @@ class EcoSpec:
 
 			time.sleep(3)
 
-			self.power_down()			
+            self.piface.power_down(EcoSpec.POWER_RELAY)            
 			
 			raise
 			
@@ -236,7 +236,7 @@ class EcoSpec:
 			print "abort.count: " + str(a.count)
 			"""
 
-			self.extend_white_reference_arm()
+            self.piface.extend_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
 
 			time.sleep(EcoSpec.ACTUATOR_DELAY)
 
@@ -256,11 +256,11 @@ class EcoSpec:
 			print "optimize.offset2: " + str(optimize.offset2)
 			"""
 
-			# Open the shutter and collect 10 white reference readings
+			# Open the shutter and collect 200 white reference readings
 			acquire = None
 			if optimize.header == 100:
 				print "Acquire White Reference Readings..."
-				acquire_white_reference_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
+				acquire_white_reference_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
 				print "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
 				self.white_reference_results.append(acquire_white_reference_readings)
 				"""
@@ -277,9 +277,9 @@ class EcoSpec:
 				print spectrum_data
 				"""				
 
-			# Close the shutter and collect 25 dark current readings 
+			# Close the shutter and collect 200 dark current readings 
 			# TODO get time for ensuring restraction
-			self.retract_white_reference_arm()
+            self.piface.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
 			self.retract_white_reference_start_time = time.time()
 
 			control = None
@@ -290,7 +290,7 @@ class EcoSpec:
 				print "control.header: " + str(control.header)
 				if control.header == 100:
 					print "Acquire Dark Current Readings..."
-					acquire_dark_current_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "25", "0")
+					acquire_dark_current_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
 					print "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
 					self.dark_current_results.append(acquire_dark_current_readings)
 					"""
@@ -321,15 +321,15 @@ class EcoSpec:
 			self.data_set_id   = time.strftime("%Y%m%d%H%M%S", time.localtime(self.data_set_time))
 			self.activate_camera()
 
-			# Open the shutter and collect 10 subject matter readings
+			# Open the shutter and collect 200 subject matter readings
 
 			if optimize.header                                         == 100 and \
 			   acquire_white_reference_readings.spectrum_header.header == 100 and \
 			   acquire_dark_current_readings.spectrum_header.header    == 100 and \
 			   control.header                                          == 100:
-				print "Acquire Subject Matter Readings 15x..."
-				for j in range(0, 14):
-					acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "10", "0")
+				print "Acquire Subject Matter Readings 1x..."
+				for j in range(0, 1):
+					acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
 					print "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
 					self.subject_matter_results.append(acquire_subject_matter_readings)
 					"""
@@ -365,6 +365,8 @@ class EcoSpec:
 			print  sys.exc_traceback
 			print "sys.exc_info(): " 
 			print  sys.exc_info()
+            if self.piface:
+                self.piface.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
 			if self.spectrometer:
 				self.spectrometer.abort()
 				self.spectrometer.close()
@@ -521,34 +523,6 @@ class EcoSpec:
 
 		print sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S')
 		return time.mktime(time.strptime(sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S'))
-
-
-	def extend_white_reference_arm(self):
-		print "EcoSpec.extend_white_reference_arm()..."
-		if self.piface:
-			self.piface.relays[EcoSpec.ACTUATOR_RELAY].turn_on()
-		return True
-
-
-	def power_down(self):
-		print "EcoSpec.power_down()..."
-		if self.piface:
-			self.piface.relays[EcoSpec.POWER_RELAY].turn_off()
-		return True
-
-
-	def power_up(self):
-		print "EcoSpec.power_up()..."
-		if self.piface:
-			self.piface.relays[EcoSpec.POWER_RELAY].turn_on()
-		return True
-
-
-	def retract_white_reference_arm(self):
-		print "EcoSpec.retract_white_reference_arm()..."
-		if self.piface:
-			self.piface.relays[EcoSpec.ACTUATOR_RELAY].turn_off()
-		return True
 
 
 	def save_spectrometer_readings(self):

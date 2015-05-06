@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 #
 import ecospec
+import piface
 
-x = ecospec.EcoSpec()
+x = piface.PiFace()
 
-x.extend_white_reference_arm()
+x.extend_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)

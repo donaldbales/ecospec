@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 #
 import ecospec
+import piface
 
-x = ecospec.EcoSpec()
+x = piface.PiFace()
 
-x.power_down()
+x.power_down(ecospec.EcoSpec.POWER_RELAY)
