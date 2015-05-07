@@ -100,7 +100,7 @@ class EcoSpec:
       # Collect data until sunset
       while time.time() < self.sunset_time:
         try:
-          while self.piface.is_raining():
+          while self.piface.is_raining(EcoSpec.PRECIP_SENSOR):
             print "It's raining..."
             self.data_set_time = time.time()
             self.data_set_id   = time.strftime("%Y%m%d%H%M%S", time.localtime(self.data_set_time))
