@@ -67,14 +67,14 @@ class EcoSpec:
     # Original. Defect in PTU software makes it reset in wrong direction.
     #self.pantilt_positions        = [-170, -139, -108, -77, -46, -15, 15, 46, 77, 108, 139, 170] 
     # For indorr testing; 3 positions
-    self.pantilt_positions = [-90, 0, 90]   
+    #self.pantilt_positions = [-90, 0, 90]   
     # For field use. Works-around the defect in PTU software makes it reset in wrong direction.
-    #self.pantilt_positions        = [-143, -117, -91, -65, -39, -13, 13, 39, 65, 91, 117, 143]
+    self.pantilt_positions        = [-143, -117, -91, -65, -39, -13, 13, 39, 65, 91, 117, 143]
     try:
       self.piface = piface.PiFace()
     except:
       print("Can't access piface.")
-      self.piface               = None
+      self.piface                 = None
     self.spectrometer             = None
     
 
