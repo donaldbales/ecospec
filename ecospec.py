@@ -100,6 +100,22 @@ class EcoSpec:
       # Collect data until sunset
       while time.time() < self.sunset_time:
         try:
+          while self.piface.is_raining():
+            print "It's raining..."
+            self.data_set_time = time.time()
+            self.data_set_id   = time.strftime("%Y%m%d%H%M%S", time.localtime(self.data_set_time))
+            data_set_timestamp_string = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.data_set_time))
+            delimiter = ','
+            file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-it-is-raining.csv"
+            file_handle = open(file_name, "w")
+            file_handle.write("data_set_time"           + delimiter + "pantilt_position"                     + delimiter + "status\n")
+            file_handle.write(data_set_timestamp_string + delimiter + self.current_pantilt_position_string() + delimiter + "it is raining\n")
+            file_handle.close()
+            time.sleep(50)
+        except:
+          raise
+          
+        try:
           self.activate_pantilt()
         except:
           raise
@@ -118,9 +134,8 @@ class EcoSpec:
         # break
         count += 1
 
-        self.piface.power_down(EcoSpec.POWER_RELAY)
-        self.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
-
+      self.piface.power_down(EcoSpec.POWER_RELAY)
+      self.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
       exit(0)
     except:
       if self.spectrometer:
