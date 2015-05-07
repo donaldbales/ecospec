@@ -63,7 +63,7 @@ class PiFace:
         return True
 
     def is_raining(self, relay_no):
-        print "PiFace.retract_white_reference_arm()..."
+        print "PiFace.is_raining()..."
         result = pifacedigitalio.digital_read(relay_no)
         if result == 1:
           return True
