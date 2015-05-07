@@ -17,7 +17,7 @@ pifacedigitalio.init()
 
 time.sleep(10)
 
-x = piface.PiFace()
+piface_instance = piface.PiFace()
 
 while True:
   logfile = open('/var/log/checker/checker.log' ,'a', 0)
@@ -55,6 +55,23 @@ while True:
   else:
     logfile.write("Yes it is.\n")
 
+  logfile.write("Checking if mover.py is running at " + str(datetime.datetime.today()) + "...\n")
+  try:
+    result = subprocess.check_output("ps -A | grep mover", shell=True)
+  except subprocess.CalledProcessError:
+    result = ""
+  if not actuator_under_control:
+    if (result + ' ') == ' ':
+      logfile.write("No it's not, so let's start it!\n")
+      try:
+        result = subprocess.check_output("service mover start", shell=True)
+      except subprocess.CalledProcessError as error:
+        logfile.write("CalledProcessError({0}): {1}\n".format(error.errno, error.strerror))
+        result = ""
+      logfile.write(result + "\n")
+    else:
+      logfile.write("Yes it is.\n")
+   
   logfile.close()
   logfile = open('/var/log/checker/checker.log' ,'a', 0)
 
@@ -84,6 +101,7 @@ while True:
       result = ""
 
       try:
+        logfile.write("stopping service ecospec\n")
         result = subprocess.check_output("service ecospec stop", shell=True)
         actuator_under_control = True
       except subprocess.CalledProcessError as error:
@@ -91,14 +109,9 @@ while True:
         result = ""
 
       try:
-        #x = piface.PiFace()        
-        x.extend_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)
+        logfile.write("extending white reference arm\n")
+        piface_instance.extend_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)
       except:
-        #logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
-        #logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
-        #logfile.write("sys.exc_traceback: {0}\n".format(sys.exc_traceback))
-        #logfile.write("sys.exc_info(): {0}\n".format(str(sys.exc_info())))
-        #logfile.write("{0}\n".format(sys.exc_info()))
         xtype, xvalue, xtb = sys.exc_info()
         logfile.write("{0}\n".format(xtype))
         logfile.write("{0}\n".format(xvalue))
@@ -110,20 +123,16 @@ while True:
       result = ""
 
       try:
-        #x = piface.PiFace()        
-        x.retract_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)
+        logfile.write("retracting white reference arm\n")
+        piface_instance.retract_white_reference_arm(ecospec.EcoSpec.ACTUATOR_RELAY)
       except:
-        #logfile.write("sys.exc_type: {0}\n".format(str(sys.exc_type)))
-        #logfile.write("sys.exc_value: {0}\n".format(str(sys.exc_value)))
-        #logfile.write("sys.exc_traceback: {0}\n".format(sys.exc_traceback))
-        #logfile.write("sys.exc_info(): {0}\n".format(str(sys.exc_info())))
-        #logfile.write("{0}\n".format(sys.exc_info()))
         xtype, xvalue, xtb = sys.exc_info()
         logfile.write("{0}\n".format(xtype))
         logfile.write("{0}\n".format(xvalue))
         traceback.print_tb(xtb, None, logfile)
 
       try:
+        logfile.write("starting service ecospec\n")
         result = subprocess.check_output("service ecospec start", shell=True)
         actuator_under_control = False
       except subprocess.CalledProcessError as error:
