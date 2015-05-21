@@ -26,7 +26,8 @@ class CR1000:
 		self.data_set_id = data_set_id
 		self.host        = host
 		self.port        = port
-		self.tables      = ("_9_Sec", "_01_Min", "_30_Min", "_01_Day", "Status")
+#    self.tables      = ("_9_Sec", "_01_Min", "_30_Min", "_01_Day", "Status")
+    self.tables      = ("_10_Sec", "_01_Min", "_30_Min", "_01_Day", "Status")
 		for table in self.tables:
 			time_string  = "cr1000" #time.strftime("%Y%m%d%H%M%S")
 			data_file_path   = ecospec.EcoSpec.DATA_PATH + self.data_set_id + "-" + current_pantilt_position_string + "-" + time_string + "-" + table + ".csv"
@@ -34,7 +35,6 @@ class CR1000:
 			log_file_path    = ecospec.EcoSpec.LOG_PATH  + self.data_set_id + "-" + current_pantilt_position_string + "-" + time_string + "-" + table + ".log"
 			print("log_file_path: " + log_file_path)
 			wget_command     = "umask 000 && wget -b -d -nc -o " + log_file_path + " -O " + data_file_path + " -v 'http://" + self.host + ":" + self.port + "/?command=dataquery" + "&uri=" + table + "&format=toa5" + "&mode=since-time" + "&p1=" + since_time + "' && exit $?\n"
-#			wget_command     = "umask 000 && wget -   d -nc -o " + log_file_path + " -O " + data_file_path + " -v 'http://" + self.host + ":" + self.port + "/?command=dataquery" + "&uri=" + table + "&format=toa5" + "&mode=since-time" + "&p1=" + since_time + "' && exit $?\n"
 			print("wget_command: " + wget_command)
 			subprocess.call(wget_command, shell=True)
 			
