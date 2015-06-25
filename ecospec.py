@@ -587,7 +587,7 @@ class EcoSpec:
 
 
 def log(message):
-  formatted = str(datetime.datetime.today()) + " mover: " + str(message) 
+  formatted = str(datetime.datetime.today()) + " ecospec: " + str(message) 
   logfile = open('/var/log/ecospec/ecospec.log' ,'a', 0)
   logfile.write(formatted + "\n")
   logfile.close()
