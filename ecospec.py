@@ -47,7 +47,7 @@ class EcoSpec:
   THIRTY_MINUTES    = 30 * 60
 
   def __init__(self):
-    print "Ecospec.__init__()..."
+    log "Ecospec.__init__()..."
     if not os.path.exists(EcoSpec.DATA_PATH):
       os.makedirs(EcoSpec.DATA_PATH)
     if not os.path.exists(EcoSpec.LOG_PATH):
@@ -73,13 +73,13 @@ class EcoSpec:
     try:
       self.piface = piface.PiFace()
     except:
-      print("Can't access piface.")
+      log("Can't access piface.")
       self.piface                 = None
     self.spectrometer             = None
     
 
   def main(self):
-    print "EcoSpec.main()..."
+    log "EcoSpec.main()..."
     try:
       self.sunrise_time = self.calculate_sunrise()
       self.since_time   = time.strftime("%Y-%m-%dT05:00:00.00")
@@ -101,7 +101,7 @@ class EcoSpec:
       while time.time() < self.sunset_time:
         try:
           while self.piface.is_raining(EcoSpec.PRECIP_SENSOR):
-            print "It's raining..."
+            log "It's raining..."
             self.data_set_time = time.time()
             self.data_set_id   = time.strftime("%Y%m%d%H%M%S", time.localtime(self.data_set_time))
             data_set_timestamp_string = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.data_set_time))
@@ -171,7 +171,7 @@ class EcoSpec:
 
   def activate_pantilt(self):
     # A serial communications device
-    print "EcoSpec.activate_pantilt()..."
+    log "EcoSpec.activate_pantilt()..."
 
     if not self.pantilt:
       self.pantilt = ptu_d300.PtuD300('/dev/ttyUSB0', 9600)
@@ -195,11 +195,11 @@ class EcoSpec:
     if self.pantilt_position == 0:
       time.sleep(EcoSpec.PAN_TILT_DELAY)
 
-    #print("result: '" + result +"'")
-    #print(result[2:4])
+    #log("result: '" + result +"'")
+    #log(result[2:4])
     #if result[2:4] == "!P":
     if "!P" in result:
-      print("trying again...")
+      log("trying again...")
       self.pantilt.send(ptu_d300.PtuD300.PAN_POSITION_ABSOLUTE)
       self.pantilt.send(ptu_d300.PtuD300.PAN_POSITION_ABSOLUTE + str(self.pantilt.degrees_to_positions(self.pantilt_positions[self.pantilt_position])))
       self.pantilt.send(ptu_d300.PtuD300.PAN_AWAIT_COMPLETION)
@@ -209,7 +209,7 @@ class EcoSpec:
 
   def activate_spectrometer(self):
     # TCP/IP communications device
-    print "EcoSpec.activate_spectrometer()..."
+    log "EcoSpec.activate_spectrometer()..."
 
     self.white_reference_results = []
     self.dark_current_results    = []
@@ -218,32 +218,32 @@ class EcoSpec:
       if not self.spectrometer:
         self.spectrometer = fieldspec4.FieldSpec4()
 
-        print self.spectrometer
+        #log self.spectrometer
 
         self.spectrometer.open(EcoSpec.FIELDSPEC4_HOST)
 
         version = self.spectrometer.version()
 
-        print "version.name: " + version.name
-        print "version.value: " + str(version.value)
-        print "version.type: " + str(version.type)
+        log "version.name: " + version.name
+        log "version.value: " + str(version.value)
+        log "version.type: " + str(version.type)
 
         restore = self.spectrometer.restore("1")
-        print "restore.header: " + str(restore.header)
+        log "restore.header: " + str(restore.header)
 
         if restore.header != 100:
-          print "Trying restore again..."
+          log "Trying restore again..."
           restore = self.spectrometer.restore("1")
-          print "restore.header: " + str(restore.header)
+          log "restore.header: " + str(restore.header)
 
         """
-          print "restore.header: " + str(restore.header)
-          print "restore.errbyte: " + str(restore.errbyte)
+          log "restore.header: " + str(restore.header)
+          log "restore.errbyte: " + str(restore.errbyte)
           for i in range(0, 200):
             if restore.names[i]:
-              print restore.names[i] + ": " + str(restore.values[i])
-          print "restore.count: " + str(restore.count)
-          print "restore.verify: " + str(restore.verify)
+              log restore.names[i] + ": " + str(restore.values[i])
+          log "restore.count: " + str(restore.count)
+          log "restore.verify: " + str(restore.verify)
         """
       else:
         self.spectrometer.open(EcoSpec.FIELDSPEC4_HOST)
@@ -252,11 +252,11 @@ class EcoSpec:
       """
       a = self.spectrometer.abort()
 
-      print "abort.header: " + str(a.header)
-      print "abort.errbyte: " + str(a.errbyte)
-      print "abort.name: " + a.name
-      print "abort.value: " + str(a.value)
-      print "abort.count: " + str(a.count)
+      log "abort.header: " + str(a.header)
+      log "abort.errbyte: " + str(a.errbyte)
+      log "abort.name: " + a.name
+      log "abort.value: " + str(a.value)
+      log "abort.count: " + str(a.count)
       """
 
       self.piface.extend_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
@@ -265,39 +265,39 @@ class EcoSpec:
 
       # Optimize the spectrometer with the white reference in field of view
       
-      print "Optimize..."
+      log "Optimize..."
       optimize = self.spectrometer.optimize(fieldspec4.FieldSpec4.OPT_VNIR_SWIR1_SWIR2)
-      print "optimize.header: " + str(optimize.header)
+      log "optimize.header: " + str(optimize.header)
 
       """
-      print "optimize.header: " + str(optimize.header)
-      print "optimize.errbyte: " + str(optimize.errbyte)
-      print "optimize.itime: " + str(optimize.itime)
-      print "optimize.gain1: " + str(optimize.gain1)
-      print "optimize.gain2: " + str(optimize.gain2)
-      print "optimize.offset1: " + str(optimize.offset1)
-      print "optimize.offset2: " + str(optimize.offset2)
+      log "optimize.header: " + str(optimize.header)
+      log "optimize.errbyte: " + str(optimize.errbyte)
+      log "optimize.itime: " + str(optimize.itime)
+      log "optimize.gain1: " + str(optimize.gain1)
+      log "optimize.gain2: " + str(optimize.gain2)
+      log "optimize.offset1: " + str(optimize.offset1)
+      log "optimize.offset2: " + str(optimize.offset2)
       """
 
       # Open the shutter and collect 200 white reference readings
       acquire = None
       if optimize.header == 100:
-        print "Acquire White Reference Readings..."
+        log "Acquire White Reference Readings..."
         acquire_white_reference_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
-        print "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
+        log "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
         self.white_reference_results.append(acquire_white_reference_readings)
         """
-        print "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
-        print "acquire_white_reference_readings.spectrum_header.errbyte: " + str(acquire_white_reference_readings.spectrum_header.errbyte)
-        print "acquire_white_reference_readings.spectrum_header.sample_count: " + str(acquire_white_reference_readings.spectrum_header.sample_count)
-        print "acquire_white_reference_readings.spectrum_header.trigger: " + str(acquire_white_reference_readings.spectrum_header.trigger)
-        print "acquire_white_reference_readings.spectrum_header.voltage: " + str(acquire_white_reference_readings.spectrum_header.voltage)
-        print "acquire_white_reference_readings.spectrum_buffer length: " + str(len(acquire_white_reference_readings.spectrum_buffer))
+        log "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
+        log "acquire_white_reference_readings.spectrum_header.errbyte: " + str(acquire_white_reference_readings.spectrum_header.errbyte)
+        log "acquire_white_reference_readings.spectrum_header.sample_count: " + str(acquire_white_reference_readings.spectrum_header.sample_count)
+        log "acquire_white_reference_readings.spectrum_header.trigger: " + str(acquire_white_reference_readings.spectrum_header.trigger)
+        log "acquire_white_reference_readings.spectrum_header.voltage: " + str(acquire_white_reference_readings.spectrum_header.voltage)
+        log "acquire_white_reference_readings.spectrum_buffer length: " + str(len(acquire_white_reference_readings.spectrum_buffer))
         spectrum_data = "spectrum_data: " + str(acquire_white_reference_readings.spectrum_buffer[0]) 
         for i in range(1, len(acquire_white_reference_readings.spectrum_buffer)):
           spectrum_data += ","
           spectrum_data += str(acquire_white_reference_readings.spectrum_buffer[i])
-        print spectrum_data
+        log spectrum_data
         """       
 
       # Close the shutter and collect 200 dark current readings 
@@ -308,30 +308,30 @@ class EcoSpec:
       control = None
       if optimize.header                                         == 100 and \
          acquire_white_reference_readings.spectrum_header.header == 100:
-        print "Close the shutter..."
+        log "Close the shutter..."
         control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.CLOSE_SHUTTER)
-        print "control.header: " + str(control.header)
+        log "control.header: " + str(control.header)
         if control.header == 100:
-          print "Acquire Dark Current Readings..."
+          log "Acquire Dark Current Readings..."
           acquire_dark_current_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
-          print "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
+          log "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
           self.dark_current_results.append(acquire_dark_current_readings)
           """
-          print "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
-          print "acquire_dark_current_readings.spectrum_header.errbyte: " + str(acquire_dark_current_readings.spectrum_header.errbyte)
-          print "acquire_dark_current_readings.spectrum_header.sample_count: " + str(acquire_dark_current_readings.spectrum_header.sample_count)
-          print "acquire_dark_current_readings.spectrum_header.trigger: " + str(acquire_dark_current_readings.spectrum_header.trigger)
-          print "acquire_dark_current_readings.spectrum_header.voltage: " + str(acquire_dark_current_readings.spectrum_header.voltage)
-          print "acquire_dark_current_readings.spectrum_buffer length: " + str(len(acquire_dark_current_readings.spectrum_buffer))
+          log "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
+          log "acquire_dark_current_readings.spectrum_header.errbyte: " + str(acquire_dark_current_readings.spectrum_header.errbyte)
+          log "acquire_dark_current_readings.spectrum_header.sample_count: " + str(acquire_dark_current_readings.spectrum_header.sample_count)
+          log "acquire_dark_current_readings.spectrum_header.trigger: " + str(acquire_dark_current_readings.spectrum_header.trigger)
+          log "acquire_dark_current_readings.spectrum_header.voltage: " + str(acquire_dark_current_readings.spectrum_header.voltage)
+          log "acquire_dark_current_readings.spectrum_buffer length: " + str(len(acquire_dark_current_readings.spectrum_buffer))
           spectrum_data = "spectrum_data: " + str(acquire_dark_current_readings.spectrum_buffer[0]) 
           for i in range(1, len(acquire_dark_current_readings.spectrum_buffer)):
             spectrum_data += ","
             spectrum_data += str(acquire_dark_current_readings.spectrum_buffer[i])
-          print spectrum_data
+          log spectrum_data
           """
-          print "Open the shutter..."
+          log "Open the shutter..."
         control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.OPEN_SHUTTER)
-        print "control.header: " + str(control.header)
+        log "control.header: " + str(control.header)
 
       #Verify retraction
       self.retract_white_reference_stop_time = time.time()
@@ -340,7 +340,7 @@ class EcoSpec:
         time.sleep(EcoSpec.ACTUATOR_DELAY - self.acquire_dark_reading_elapsed_time)
 
       self.data_set_time = time.time()
-      print(self.data_set_time)
+      log(self.data_set_time)
       self.data_set_id   = time.strftime("%Y%m%d%H%M%S", time.localtime(self.data_set_time))
       self.activate_camera()
 
@@ -350,23 +350,23 @@ class EcoSpec:
          acquire_white_reference_readings.spectrum_header.header == 100 and \
          acquire_dark_current_readings.spectrum_header.header    == 100 and \
          control.header                                          == 100:
-        print "Acquire Subject Matter Readings 1x..."
+        log "Acquire Subject Matter Readings 1x..."
         for j in range(0, 1):
           acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
-          print "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
+          log "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
           self.subject_matter_results.append(acquire_subject_matter_readings)
           """
-          print "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
-          print "acquire_subject_matter_readings.spectrum_header.errbyte: " + str(acquire_subject_matter_readings.spectrum_header.errbyte)
-          print "acquire_subject_matter_readings.spectrum_header.sample_count: " + str(acquire_subject_matter_readings.spectrum_header.sample_count)
-          print "acquire_subject_matter_readings.spectrum_header.trigger: " + str(acquire_subject_matter_readings.spectrum_header.trigger)
-          print "acquire_subject_matter_readings.spectrum_header.voltage: " + str(acquire_subject_matter_readings.spectrum_header.voltage)
-          print "acquire_subject_matter_readings.spectrum_buffer length: " + str(len(acquire_subject_matter_readings.spectrum_buffer))
+          log "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
+          log "acquire_subject_matter_readings.spectrum_header.errbyte: " + str(acquire_subject_matter_readings.spectrum_header.errbyte)
+          log "acquire_subject_matter_readings.spectrum_header.sample_count: " + str(acquire_subject_matter_readings.spectrum_header.sample_count)
+          log "acquire_subject_matter_readings.spectrum_header.trigger: " + str(acquire_subject_matter_readings.spectrum_header.trigger)
+          log "acquire_subject_matter_readings.spectrum_header.voltage: " + str(acquire_subject_matter_readings.spectrum_header.voltage)
+          log "acquire_subject_matter_readings.spectrum_buffer length: " + str(len(acquire_subject_matter_readings.spectrum_buffer))
           spectrum_data = "spectrum_data: " + str(acquire_subject_matter_readings.spectrum_buffer[0]) 
           for i in range(1, len(acquire_subject_matter_readings.spectrum_buffer)):
             spectrum_data += ","
             spectrum_data += str(acquire_subject_matter_readings.spectrum_buffer[i])
-          print spectrum_data
+          log spectrum_data
           """
 
       self.activate_datalogger()
@@ -379,15 +379,15 @@ class EcoSpec:
 #           self.datalogger_thread_status < 1:
 #         time.sleep(1)
     except:
-      print "EcoSpec.activate_spectrometer(): ERROR:"
-      print "sys.exc_type: " 
-      print  sys.exc_type
-      print "sys.exc_value: "
-      print  sys.exc_value
-      print "sys.exc_traceback: "
-      print  sys.exc_traceback
-      print "sys.exc_info(): " 
-      print  sys.exc_info()
+      log "EcoSpec.activate_spectrometer(): ERROR:"
+      log "sys.exc_type: " 
+      log  sys.exc_type
+      log "sys.exc_value: "
+      log  sys.exc_value
+      log "sys.exc_traceback: "
+      log  sys.exc_traceback
+      log "sys.exc_info(): " 
+      log  sys.exc_info()
       if self.piface:
         self.piface.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
       if self.spectrometer:
@@ -400,7 +400,7 @@ class EcoSpec:
 
   def activate_camera(self):
     # TCP/IP communications device
-    print "EcoSpec.activate_camera()..."
+    log "EcoSpec.activate_camera()..."
 
     camera = axis_q1604.AxisQ1604(self.data_set_id, self.current_pantilt_position_string(), EcoSpec.DATA_PATH, EcoSpec.LOG_PATH, EcoSpec.AXIS_Q1604_HOST)
 
@@ -409,7 +409,7 @@ class EcoSpec:
 
   def activate_datalogger(self):
     # A serial communications device
-    print "EcoSpec.activate_datalogger()..."
+    log "EcoSpec.activate_datalogger()..."
 
     data_logger = cr1000.CR1000(self.data_set_id, self.current_pantilt_position_string(), EcoSpec.DATA_PATH, EcoSpec.LOG_PATH, self.since_time, EcoSpec.CR1000_HOST)
 
@@ -417,13 +417,13 @@ class EcoSpec:
 
 
   def calculate_sunrise(self):
-    print "EcoSpec.calculate_sunrise()..."
+    log "EcoSpec.calculate_sunrise()..."
 
     today_datetime = datetime.datetime.today()
     today_string   = today_datetime.strftime("%Y%m%d")
-    #print 'today_datetime: ' + str(type(today_datetime))
-    #print 'today_datetime: ' + str(today_datetime)
-    #print 'today_string:   ' + today_string
+    #log 'today_datetime: ' + str(type(today_datetime))
+    #log 'today_datetime: ' + str(today_datetime)
+    #log 'today_string:   ' + today_string
 
     #Make an observer
     observer      = ephem.Observer()
@@ -433,8 +433,8 @@ class EcoSpec:
     #observer_datetime = datetime.datetime(2014,10,8,5,0,0)
     observer_datetime = datetime.datetime.utcnow()
     observer.date = observer_datetime
-    #print 'observer.date:  ' + str(type(observer.date))
-    #print 'observer.date:  ' + str(observer.date)
+    #log 'observer.date:  ' + str(type(observer.date))
+    #log 'observer.date:  ' + str(observer.date)
 
     #Location of Batvia, IL
     #41.848889, -88.308333
@@ -456,7 +456,7 @@ class EcoSpec:
     if sunset_string != today_string:
       sunset_datetime  = ephem.localtime(observer.previous_setting(ephem.Sun())) #Sunset
 
-    #print 'if ' + str(sunset_datetime) + ' < ' + str(ephem.localtime(observer.date)) + ":"
+    #log 'if ' + str(sunset_datetime) + ' < ' + str(ephem.localtime(observer.date)) + ":"
     # If the sun has already set, get the next day's settings
     if ephem.localtime(observer.date) > sunset_datetime:
       today_datetime    = today_datetime + datetime.timedelta(days=1)
@@ -474,21 +474,21 @@ class EcoSpec:
     if sunset_string != today_string:
       sunset_datetime  = ephem.localtime(observer.previous_setting(ephem.Sun())) #Sunset
 
-    #print 'sunrise: ' + str(type(sunrise_datetime))
-    #print 'sunset: ' + str(type(sunset_datetime))
-    #print "sunrise: " + str(sunrise_datetime)
-    #print "sunset:  " + str(sunset_datetime)   
+    #log 'sunrise: ' + str(type(sunrise_datetime))
+    #log 'sunset: ' + str(type(sunset_datetime))
+    #log "sunrise: " + str(sunrise_datetime)
+    #log "sunset:  " + str(sunset_datetime)   
 
-    print sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    log sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S')
     return time.mktime(time.strptime(sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S'))
 
 
   def calculate_sunset(self):
     today_datetime = datetime.datetime.today()
     today_string   = today_datetime.strftime("%Y%m%d")
-    #print 'today_datetime: ' + str(type(today_datetime))
-    #print 'today_datetime: ' + str(today_datetime)
-    #print 'today_string:   ' + today_string
+    #log 'today_datetime: ' + str(type(today_datetime))
+    #log 'today_datetime: ' + str(today_datetime)
+    #log 'today_string:   ' + today_string
 
     #Make an observer
     observer      = ephem.Observer()
@@ -498,8 +498,8 @@ class EcoSpec:
     #observer_datetime = datetime.datetime(2014,10,8,5,0,0)
     observer_datetime = datetime.datetime.utcnow()
     observer.date = observer_datetime
-    #print 'observer.date:  ' + str(type(observer.date))
-    #print 'observer.date:  ' + str(observer.date)
+    #log 'observer.date:  ' + str(type(observer.date))
+    #log 'observer.date:  ' + str(observer.date)
 
     #Location of Batvia, IL
     #41.848889, -88.308333
@@ -521,7 +521,7 @@ class EcoSpec:
     if sunset_string != today_string:
       sunset_datetime  = ephem.localtime(observer.previous_setting(ephem.Sun())) #Sunset
 
-    #print 'if ' + str(sunset_datetime) + ' < ' + str(ephem.localtime(observer.date)) + ":"
+    #log 'if ' + str(sunset_datetime) + ' < ' + str(ephem.localtime(observer.date)) + ":"
     # If the sun has already set, get the next day's settings
     if ephem.localtime(observer.date) > sunset_datetime:
       today_datetime    = today_datetime + datetime.timedelta(days=1)
@@ -539,17 +539,17 @@ class EcoSpec:
     if sunset_string != today_string:
       sunset_datetime  = ephem.localtime(observer.previous_setting(ephem.Sun())) #Sunset
 
-    #print 'sunrise: ' + str(type(sunrise_datetime))
-    #print 'sunset: ' + str(type(sunset_datetime))
-    #print "sunrise: " + str(sunrise_datetime)
-    #print "sunset:  " + str(sunset_datetime)   
+    #log 'sunrise: ' + str(type(sunrise_datetime))
+    #log 'sunset: ' + str(type(sunset_datetime))
+    #log "sunrise: " + str(sunrise_datetime)
+    #log "sunset:  " + str(sunset_datetime)   
 
-    print sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    log sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S')
     return time.mktime(time.strptime(sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S'))
 
 
   def save_spectrometer_readings(self):
-    print "EcoSpec.save_spectrometer_readings()..."
+    log "EcoSpec.save_spectrometer_readings()..."
     delimiter = ","
     data_set_timestamp_string = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.data_set_time))
     file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-white_reference.csv"
@@ -582,6 +582,14 @@ class EcoSpec:
         file_handle.write(data_set_timestamp_string + delimiter + self.current_pantilt_position_string() + delimiter + self.subject_matter_results[i].to_csv() + "\n")
     file_handle.close()
     return True
+
+
+def log(message):
+  formatted = str(datetime.datetime.today()) + " mover: " + str(message) 
+  logfile = open('/var/log/ecospec/ecospec.log' ,'a', 0)
+  logfile.write(formatted + "\n")
+  logfile.close()
+  print(formatted)
 
 
 if __name__ == '__main__':
