@@ -49,8 +49,10 @@ def log(message):
   logfile.write(str(datetime.datetime.today()) + " mover: " + str(message) + "\n")
   logfile.close()
 
+log("starting up")
 
 # wait for a network connection
+log("waiting for a network connection")
 time.sleep(60)
 
 # Register the streaming http handlers with urllib2
@@ -59,6 +61,7 @@ register_openers()
 data_path = '/home/ecospec/data'
 
 while True:
+  log("waking up")
   all_files = os.listdir(data_path)
   all_files.sort
   files = []
@@ -95,5 +98,7 @@ while True:
       log(type(error))
       log(str(error))
   
+  log("going to sleep for 60 seconds")
   time.sleep(60)	
 
+log("shuting down")
