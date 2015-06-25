@@ -47,7 +47,7 @@ class EcoSpec:
   THIRTY_MINUTES    = 30 * 60
 
   def __init__(self):
-    log "Ecospec.__init__()..."
+    log("Ecospec.__init__()...")
     if not os.path.exists(EcoSpec.DATA_PATH):
       os.makedirs(EcoSpec.DATA_PATH)
     if not os.path.exists(EcoSpec.LOG_PATH):
@@ -79,7 +79,7 @@ class EcoSpec:
     
 
   def main(self):
-    log "EcoSpec.main()..."
+    log("EcoSpec.main()...")
     try:
       self.sunrise_time = self.calculate_sunrise()
       self.since_time   = time.strftime("%Y-%m-%dT05:00:00.00")
@@ -101,7 +101,7 @@ class EcoSpec:
       while time.time() < self.sunset_time:
         try:
           while self.piface.is_raining(EcoSpec.PRECIP_SENSOR):
-            log "It's raining..."
+            log("It's raining...")
             self.data_set_time = time.time()
             self.data_set_id   = time.strftime("%Y%m%d%H%M%S", time.localtime(self.data_set_time))
             data_set_timestamp_string = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.data_set_time))
@@ -171,7 +171,7 @@ class EcoSpec:
 
   def activate_pantilt(self):
     # A serial communications device
-    log "EcoSpec.activate_pantilt()..."
+    log("EcoSpec.activate_pantilt()...")
 
     if not self.pantilt:
       self.pantilt = ptu_d300.PtuD300('/dev/ttyUSB0', 9600)
@@ -209,7 +209,7 @@ class EcoSpec:
 
   def activate_spectrometer(self):
     # TCP/IP communications device
-    log "EcoSpec.activate_spectrometer()..."
+    log("EcoSpec.activate_spectrometer()...")
 
     self.white_reference_results = []
     self.dark_current_results    = []
@@ -224,17 +224,17 @@ class EcoSpec:
 
         version = self.spectrometer.version()
 
-        log "version.name: " + version.name
-        log "version.value: " + str(version.value)
-        log "version.type: " + str(version.type)
+        log("version.name: " + version.name)
+        log("version.value: " + str(version.value))
+        log("version.type: " + str(version.type))
 
         restore = self.spectrometer.restore("1")
-        log "restore.header: " + str(restore.header)
+        log("restore.header: " + str(restore.header))
 
         if restore.header != 100:
-          log "Trying restore again..."
+          log("Trying restore again...")
           restore = self.spectrometer.restore("1")
-          log "restore.header: " + str(restore.header)
+          log("restore.header: " + str(restore.header))
 
         """
           log "restore.header: " + str(restore.header)
@@ -265,9 +265,9 @@ class EcoSpec:
 
       # Optimize the spectrometer with the white reference in field of view
       
-      log "Optimize..."
+      log("Optimize...")
       optimize = self.spectrometer.optimize(fieldspec4.FieldSpec4.OPT_VNIR_SWIR1_SWIR2)
-      log "optimize.header: " + str(optimize.header)
+      log("optimize.header: " + str(optimize.header))
 
       """
       log "optimize.header: " + str(optimize.header)
@@ -282,9 +282,9 @@ class EcoSpec:
       # Open the shutter and collect 200 white reference readings
       acquire = None
       if optimize.header == 100:
-        log "Acquire White Reference Readings..."
+        log("Acquire White Reference Readings...")
         acquire_white_reference_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
-        log "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
+        log("acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header))
         self.white_reference_results.append(acquire_white_reference_readings)
         """
         log "acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header)
@@ -308,13 +308,13 @@ class EcoSpec:
       control = None
       if optimize.header                                         == 100 and \
          acquire_white_reference_readings.spectrum_header.header == 100:
-        log "Close the shutter..."
+        log("Close the shutter...")
         control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.CLOSE_SHUTTER)
-        log "control.header: " + str(control.header)
+        log("control.header: " + str(control.header))
         if control.header == 100:
-          log "Acquire Dark Current Readings..."
+          log("Acquire Dark Current Readings...")
           acquire_dark_current_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
-          log "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
+          log("acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header))
           self.dark_current_results.append(acquire_dark_current_readings)
           """
           log "acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header)
@@ -329,9 +329,9 @@ class EcoSpec:
             spectrum_data += str(acquire_dark_current_readings.spectrum_buffer[i])
           log spectrum_data
           """
-          log "Open the shutter..."
+          log("Open the shutter...")
         control = self.spectrometer.control(fieldspec4.FieldSpec4.CONTROL_VNIR, fieldspec4.FieldSpec4.CONTROL_SHUTTER, fieldspec4.FieldSpec4.OPEN_SHUTTER)
-        log "control.header: " + str(control.header)
+        log("control.header: " + str(control.header))
 
       #Verify retraction
       self.retract_white_reference_stop_time = time.time()
@@ -350,10 +350,10 @@ class EcoSpec:
          acquire_white_reference_readings.spectrum_header.header == 100 and \
          acquire_dark_current_readings.spectrum_header.header    == 100 and \
          control.header                                          == 100:
-        log "Acquire Subject Matter Readings 1x..."
+        log("Acquire Subject Matter Readings 1x...")
         for j in range(0, 1):
           acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
-          log "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
+          log("acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header))
           self.subject_matter_results.append(acquire_subject_matter_readings)
           """
           log "acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header)
@@ -379,15 +379,15 @@ class EcoSpec:
 #           self.datalogger_thread_status < 1:
 #         time.sleep(1)
     except:
-      log "EcoSpec.activate_spectrometer(): ERROR:"
-      log "sys.exc_type: " 
-      log  sys.exc_type
-      log "sys.exc_value: "
-      log  sys.exc_value
-      log "sys.exc_traceback: "
-      log  sys.exc_traceback
-      log "sys.exc_info(): " 
-      log  sys.exc_info()
+      log("EcoSpec.activate_spectrometer(): ERROR:")
+      log("sys.exc_type: ") 
+      log( sys.exc_type )
+      log("sys.exc_value: ")
+      log( sys.exc_value )
+      log("sys.exc_traceback: ")
+      log( sys.exc_traceback )
+      log("sys.exc_info(): ") 
+      log( sys.exc_info() )
       if self.piface:
         self.piface.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
       if self.spectrometer:
@@ -400,7 +400,7 @@ class EcoSpec:
 
   def activate_camera(self):
     # TCP/IP communications device
-    log "EcoSpec.activate_camera()..."
+    log("EcoSpec.activate_camera()...")
 
     camera = axis_q1604.AxisQ1604(self.data_set_id, self.current_pantilt_position_string(), EcoSpec.DATA_PATH, EcoSpec.LOG_PATH, EcoSpec.AXIS_Q1604_HOST)
 
@@ -409,7 +409,7 @@ class EcoSpec:
 
   def activate_datalogger(self):
     # A serial communications device
-    log "EcoSpec.activate_datalogger()..."
+    log("EcoSpec.activate_datalogger()...")
 
     data_logger = cr1000.CR1000(self.data_set_id, self.current_pantilt_position_string(), EcoSpec.DATA_PATH, EcoSpec.LOG_PATH, self.since_time, EcoSpec.CR1000_HOST)
 
@@ -417,7 +417,7 @@ class EcoSpec:
 
 
   def calculate_sunrise(self):
-    log "EcoSpec.calculate_sunrise()..."
+    log("EcoSpec.calculate_sunrise()...")
 
     today_datetime = datetime.datetime.today()
     today_string   = today_datetime.strftime("%Y%m%d")
@@ -479,11 +479,13 @@ class EcoSpec:
     #log "sunrise: " + str(sunrise_datetime)
     #log "sunset:  " + str(sunset_datetime)   
 
-    log sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    log("Sunrise: " + str(sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S')))
     return time.mktime(time.strptime(sunrise_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S'))
 
 
   def calculate_sunset(self):
+    log("EcoSpec.calculate_sunset()...")
+
     today_datetime = datetime.datetime.today()
     today_string   = today_datetime.strftime("%Y%m%d")
     #log 'today_datetime: ' + str(type(today_datetime))
@@ -544,12 +546,12 @@ class EcoSpec:
     #log "sunrise: " + str(sunrise_datetime)
     #log "sunset:  " + str(sunset_datetime)   
 
-    log sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    log("Sunset:  " + str(sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S')))
     return time.mktime(time.strptime(sunset_datetime.strftime('%Y-%m-%dT%H:%M:%S'), '%Y-%m-%dT%H:%M:%S'))
 
 
   def save_spectrometer_readings(self):
-    log "EcoSpec.save_spectrometer_readings()..."
+    log("EcoSpec.save_spectrometer_readings()...")
     delimiter = ","
     data_set_timestamp_string = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.data_set_time))
     file_name = EcoSpec.DATA_PATH + self.data_set_id + "-" + self.current_pantilt_position_string() + "-fieldspec4" + "-white_reference.csv"
