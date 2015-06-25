@@ -340,8 +340,9 @@ class EcoSpec:
         time.sleep(EcoSpec.ACTUATOR_DELAY - self.acquire_dark_reading_elapsed_time)
 
       self.data_set_time = time.time()
-      log(self.data_set_time)
+      #log(self.data_set_time)
       self.data_set_id   = time.strftime("%Y%m%d%H%M%S", time.localtime(self.data_set_time))
+      log("subject matter sample time: " + time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(self.data_set_time)))
       self.activate_camera()
 
       # Open the shutter and collect 200 subject matter readings
