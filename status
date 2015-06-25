@@ -11,6 +11,9 @@ ps -Al | grep pppd || echo "No."
 echo Is wvdial running?
 ps -Al | grep wvdial || echo "No."
 
+echo Is mover.py running?
+ps -Al | grep mover || echo "No."
+
 echo Can we ping google.com?
-ping -c 3 google.com || echo "No."
+ping -c 1 google.com || echo "No."
 

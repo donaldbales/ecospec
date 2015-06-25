@@ -23,6 +23,7 @@ from poster.streaminghttp import register_openers
 import urllib2
 
 import os
+import datetime
 import time
 import uuid
 import settings
@@ -42,6 +43,12 @@ def get_guid():
   guid = uuid.uuid5(uuid.NAMESPACE_URL, ''.join(sixteen))
   #print guid
   return guid
+
+def log(message):
+  logfile = open('/var/log/mover/mover.log' ,'a', 0)
+  logfile.write(str(datetime.datetime.today()) + " mover: " + str(message) + "\n")
+  logfile.close()
+
 
 # wait for a network connection
 time.sleep(60)
@@ -70,18 +77,23 @@ while True:
     # headers contains the necessary Content-Type and Content-Length
     # datagen is a generator object that yields the encoded parameters
     filename = data_path + "/" + file
-    print "\ntransferring " + filename + "..."
+    print("transferring " + filename)
+    log("transferring " + filename)
     datagen, headers = multipart_encode({"commit": "Upload", "guid": get_guid(), "content": open(filename, "rb")})
     # Create the Request object
     request = urllib2.Request("http://146.137.248.12/ecospec/uploads", datagen, headers)
     try:
       urllib2.urlopen(request).read()
       transferedname = filename + ".transfered_" + time.strftime("%Y%m%d%H%M")
-      #print "renaming " + filename + " to " + transferedname
+      print "renaming " + filename + " to " + transferedname
       os.rename(filename, transferedname)
     except Exception as error:
       print("Can't transfer the file.")
+      print type(error)
       print str(error)
+      log("Can't transfer the file.")
+      log(type(error))
+      log(str(error))
   
-  time.sleep(300)	
+  time.sleep(60)	
 

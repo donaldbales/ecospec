@@ -1,5 +1,12 @@
 #!/bin/bash
 
+mkdir     /var/log/checker
+chmod 777 /var/log/checker    
+mkdir     /var/log/ecospec
+chmod 777 /var/log/ecospec 
+mkdir     /var/log/mover
+chmod 777 /var/log/mover
+
 mkdir     poster
 chown pi  poster
 chmod 777 poster
