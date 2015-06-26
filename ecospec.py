@@ -179,7 +179,7 @@ class EcoSpec:
     self.pantilt_position = self.get_next_position(self.pantilt_position)
 
     if self.pantilt_position == 0:
-      self.pantilt.send(ptu_d300.PtuD300.STATUS_QUERY)
+      log(self.pantilt.send(ptu_d300.PtuD300.STATUS_QUERY))
       #self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(self.pantilt.pan_speed_maximum))
       self.pantilt.send(ptu_d300.PtuD300.PAN_SPEED_ABSOLUTE + str(1000))
     else:
