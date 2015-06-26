@@ -77,9 +77,6 @@ while True:
     else:
       log("Yes it is.")
    
-  logfile.close()
-  logfile = open('/var/log/checker/checker.log' ,'a', 0)
-
   # Check the PiFace buttons for the next ten minutes
   log('Checking if a pushbutton is being pressed at ' + str(datetime.datetime.today()))
   for i in range(1, 120):
