@@ -79,7 +79,7 @@ while True:
    
   # Check the PiFace buttons for the next ten minutes
   log('Checking if a pushbutton is being pressed at ' + str(datetime.datetime.today()))
-  for i in range(1, 120):
+  for i in range(1, 60):
     if   pifacedigitalio.digital_read(0):
       log("PiFace pushbutton 1 pressed.  Shutting down.")
       result = ""
