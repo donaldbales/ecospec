@@ -14,6 +14,19 @@ ps -Al | grep wvdial || echo "No."
 echo Is mover.py running?
 ps -Al | grep mover || echo "No."
 
-echo Can we ping google.com?
-ping -c 1 google.com || echo "No."
+echo Can we ping localhost?
+ping -c 1 -W 3 -v localhost || echo "No."
 
+echo Can we ping the RPi IP address (146.137.13.115)?
+ping -c 1 -W 3 -v 146.137.13.115 || echo "No."
+
+echo Can we ping the Fieldspec4 address (146.137.13.117)?
+ping -c 1 -W 3 -v 146.137.13.117 || echo "No."
+
+echo Can we ping the Data Logger address (146.137.13.118)?
+ping -c 1 -W 3 -v 146.137.13.118 || echo "No."
+
+echo Can we ping the Camera address (146.137.13.119)?
+ping -c 1 -W 3 -v 146.137.13.119 || echo "No."
+
+arp -a
