@@ -45,6 +45,7 @@ class EcoSpec:
   PRECIP_SENSOR     = 4
   ONE_MINUTE        = 60
   THIRTY_MINUTES    = 30 * 60
+  SAMPLE_COUNT      = "200"
 
   def __init__(self):
     log("Ecospec.__init__()...")
@@ -279,11 +280,11 @@ class EcoSpec:
       log "optimize.offset2: " + str(optimize.offset2)
       """
 
-      # Open the shutter and collect 200 white reference readings
+      # Open the shutter and collect EcoSpec.SAMPLE_COUNT white reference readings
       acquire = None
       if optimize.header == 100:
         log("Acquire White Reference Readings...")
-        acquire_white_reference_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
+        acquire_white_reference_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, EcoSpec.SAMPLE_COUNT, "0")
         log("acquire_white_reference_readings.spectrum_header.header: " + str(acquire_white_reference_readings.spectrum_header.header))
         self.white_reference_results.append(acquire_white_reference_readings)
         """
@@ -300,7 +301,7 @@ class EcoSpec:
         log spectrum_data
         """       
 
-      # Close the shutter and collect 200 dark current readings 
+      # Close the shutter and collect EcoSpec.SAMPLE_COUNT dark current readings 
       # TODO get time for ensuring restraction
       self.piface.retract_white_reference_arm(EcoSpec.ACTUATOR_RELAY)
       self.retract_white_reference_start_time = time.time()
@@ -313,7 +314,7 @@ class EcoSpec:
         log("control.header: " + str(control.header))
         if control.header == 100:
           log("Acquire Dark Current Readings...")
-          acquire_dark_current_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
+          acquire_dark_current_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, EcoSpec.SAMPLE_COUNT, "0")
           log("acquire_dark_current_readings.spectrum_header.header: " + str(acquire_dark_current_readings.spectrum_header.header))
           self.dark_current_results.append(acquire_dark_current_readings)
           """
@@ -345,15 +346,14 @@ class EcoSpec:
       log("subject matter sample time: " + time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(self.data_set_time)))
       self.activate_camera()
 
-      # Open the shutter and collect 200 subject matter readings
-
+      # Open the shutter and collect EcoSpec.SAMPLE_COUNT subject matter readings
       if optimize.header                                         == 100 and \
          acquire_white_reference_readings.spectrum_header.header == 100 and \
          acquire_dark_current_readings.spectrum_header.header    == 100 and \
          control.header                                          == 100:
         log("Acquire Subject Matter Readings 1x...")
         for j in range(0, 1):
-          acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, "200", "0")
+          acquire_subject_matter_readings = self.spectrometer.acquire(fieldspec4.FieldSpec4.ACQUIRE_SET_SAMPLE_COUNT, EcoSpec.SAMPLE_COUNT, "0")
           log("acquire_subject_matter_readings.spectrum_header.header: " + str(acquire_subject_matter_readings.spectrum_header.header))
           self.subject_matter_results.append(acquire_subject_matter_readings)
           """
