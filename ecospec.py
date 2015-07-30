@@ -45,7 +45,7 @@ class EcoSpec:
   PRECIP_SENSOR     = 4
   ONE_MINUTE        = 60
   THIRTY_MINUTES    = 30 * 60
-  SAMPLE_COUNT      = "200"
+  SAMPLE_COUNT      = "100"
 
   def __init__(self):
     log("Ecospec.__init__()...")
